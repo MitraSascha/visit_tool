@@ -17,6 +17,8 @@ from app.api import (
     contact_groups,
     dashboard,
     activity_log,
+    push,
+    crm,
 )
 
 
@@ -33,6 +35,7 @@ async def lifespan(app: FastAPI):
     import app.models.reminder  # noqa: F401 — register model
     import app.models.contact_group  # noqa: F401 — register model
     import app.models.activity_log  # noqa: F401 — register model
+    import app.models.push_subscription  # noqa: F401 — register model
     from app.models.user import User
     from app.services.auth_service import hash_password
 
@@ -44,6 +47,16 @@ async def lifespan(app: FastAPI):
                 ADD COLUMN IF NOT EXISTS last_contacted_at TIMESTAMP,
                 ADD COLUMN IF NOT EXISTS lat DOUBLE PRECISION,
                 ADD COLUMN IF NOT EXISTS lng DOUBLE PRECISION;
+        """))
+        await conn.execute(__import__('sqlalchemy').text("""
+            ALTER TABLE reminders
+                ADD COLUMN IF NOT EXISTS notification_sent BOOLEAN NOT NULL DEFAULT FALSE,
+                ADD COLUMN IF NOT EXISTS notify_before_minutes INTEGER NOT NULL DEFAULT 30;
+        """))
+        # contact_id nullable machen (CRM-Termine ohne Kontakt)
+        await conn.execute(__import__('sqlalchemy').text("""
+            ALTER TABLE reminders
+                ALTER COLUMN contact_id DROP NOT NULL;
         """))
 
     async with AsyncSessionLocal() as session:
@@ -60,8 +73,18 @@ async def lifespan(app: FastAPI):
             ))
             await session.commit()
 
+    # VAPID-Keys initialisieren (generiert Schlüssel beim ersten Start)
+    from app.services.push_service import get_vapid_keys
+    get_vapid_keys()
+
+    # Hintergrund-Task: Push-Benachrichtigungen für fällige Erinnerungen
+    import asyncio
+    from app.services.push_service import reminder_notification_loop
+    task = asyncio.create_task(reminder_notification_loop(AsyncSessionLocal))
+
     yield  # app runs here
 
+    task.cancel()
     await engine.dispose()
 
 
@@ -105,6 +128,8 @@ app.include_router(reminders.router, prefix="/api", tags=["reminders"])
 app.include_router(contact_groups.router, prefix="/api", tags=["groups"])
 app.include_router(dashboard.router, prefix="/api", tags=["dashboard"])
 app.include_router(activity_log.router, prefix="/api", tags=["activity"])
+app.include_router(push.router,         prefix="/api", tags=["push"])
+app.include_router(crm.router,          prefix="/api", tags=["crm"])
 
 
 @app.get("/api/health", tags=["health"])

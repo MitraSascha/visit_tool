@@ -1,5 +1,6 @@
 import {
-  Component, OnInit, ChangeDetectionStrategy, signal, computed, inject
+  Component, OnInit, ChangeDetectionStrategy, signal, computed, inject,
+  ElementRef, ViewChild
 } from '@angular/core';
 import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
@@ -13,6 +14,9 @@ import {
 } from '../../core/models/contact.model';
 import { ContactApiService } from '../../core/services/contact-api.service';
 import { AssetApiService } from '../../core/services/asset-api.service';
+import { CrmApiService } from '../../core/services/crm-api.service';
+import { ReminderApiService } from '../../core/services/reminder-api.service';
+import { CrmEvent, CRM_DAY_OPTIONS } from '../../core/models/crm-event.model';
 
 @Component({
   selector: 'app-contact-detail',
@@ -23,10 +27,13 @@ import { AssetApiService } from '../../core/services/asset-api.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContactDetail implements OnInit {
-  private readonly route      = inject(ActivatedRoute);
-  private readonly router     = inject(Router);
-  private readonly contactApi = inject(ContactApiService);
-  readonly assetApi            = inject(AssetApiService);
+  @ViewChild('actionPanel') actionPanelRef?: ElementRef<HTMLElement>;
+  private readonly route       = inject(ActivatedRoute);
+  private readonly router      = inject(Router);
+  private readonly contactApi  = inject(ContactApiService);
+  private readonly crmApi      = inject(CrmApiService);
+  private readonly reminderApi = inject(ReminderApiService);
+  readonly assetApi             = inject(AssetApiService);
 
   readonly contact        = signal<PartnerContact | null>(null);
   readonly loading        = signal(true);
@@ -35,6 +42,16 @@ export class ContactDetail implements OnInit {
   readonly deleting       = signal(false);
   readonly showQr         = signal(false);
   readonly showDuplicates = signal(false);
+  readonly showShare      = signal(false);
+
+  // CRM
+  readonly showCrm        = signal(false);
+  readonly crmDays        = signal(7);
+  readonly crmEvents      = signal<CrmEvent[]>([]);
+  readonly crmLoading     = signal(false);
+  readonly crmError       = signal<string | null>(null);
+  readonly crmSaved       = signal<Set<number>>(new Set());
+  readonly crmDayOptions  = CRM_DAY_OPTIONS;
 
   // Asset-URLs für 3D-Viewer (echte Fotos der Visitenkarte)
   readonly frontImageUrl = computed(() => {
@@ -67,14 +84,65 @@ export class ContactDetail implements OnInit {
   });
 
   shareContact(): void {
+    const text = this.shareText();
+    if (navigator.share) {
+      navigator.share({ title: this.contact()?.company_name ?? '', text }).catch(() => {});
+    } else {
+      this.showShare.set(true);
+      this.scrollToPanel();
+    }
+  }
+
+  private scrollToPanel(): void {
+    // Small delay so Angular renders the panel before we scroll
+    setTimeout(() => {
+      this.actionPanelRef?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
+  }
+
+  openQr(): void {
+    this.showQr.update(v => !v);
+    if (!this.showQr()) return;
+    this.showShare.set(false);
+    this.showDuplicates.set(false);
+    this.scrollToPanel();
+  }
+
+  openDuplicates(): void {
+    this.showDuplicates.update(v => !v);
+    if (!this.showDuplicates()) return;
+    this.showShare.set(false);
+    this.showQr.set(false);
+    this.scrollToPanel();
+  }
+
+  shareText(): string {
     const c = this.contact();
-    if (!c || !('share' in navigator)) return;
-    const confirmed = confirm('Sie teilen personenbezogene Daten. Fortfahren?');
-    if (!confirmed) return;
-    navigator.share({
-      title: c.company_name,
-      text: [c.contact_name, c.phone || c.mobile, c.email].filter(Boolean).join(' · '),
-    }).catch(() => {});
+    if (!c) return '';
+    return [
+      c.company_name,
+      c.contact_name,
+      c.job_title,
+      c.phone   ? `Tel: ${c.phone}`   : '',
+      c.mobile  ? `Mobil: ${c.mobile}` : '',
+      c.email   ? `E-Mail: ${c.email}` : '',
+      c.website ? `Web: ${c.website}`  : '',
+      (c.street || c.city) ? [c.street, `${c.zip_code ?? ''} ${c.city ?? ''}`.trim()].filter(Boolean).join(', ') : '',
+    ].filter(Boolean).join('\n');
+  }
+
+  copyShareText(): void {
+    const text = this.shareText();
+    // execCommand works without HTTPS; clipboard API requires secure context
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity  = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    alert('Kontaktdaten kopiert ✓');
   }
 
   printContact(): void { window.print(); }
@@ -90,6 +158,47 @@ export class ContactDetail implements OnInit {
         this.deleteConfirm.set(false);
       }
     });
+  }
+
+  openCrm(): void {
+    this.showCrm.update(v => !v);
+    if (!this.showCrm()) return;
+    this.showShare.set(false);
+    this.showQr.set(false);
+    this.showDuplicates.set(false);
+    this.loadCrmEvents();
+    this.scrollToPanel();
+  }
+
+  loadCrmEvents(): void {
+    this.crmLoading.set(true);
+    this.crmError.set(null);
+    this.crmApi.getEvents(this.crmDays()).subscribe({
+      next: events => { this.crmEvents.set(events); this.crmLoading.set(false); },
+      error: ()     => { this.crmError.set('Termine konnten nicht geladen werden.'); this.crmLoading.set(false); },
+    });
+  }
+
+  changeCrmDays(days: number): void {
+    this.crmDays.set(days);
+    this.loadCrmEvents();
+  }
+
+  saveAsReminder(event: CrmEvent): void {
+    const contact = this.contact();
+    if (!contact) return;
+    this.reminderApi.create({
+      contact_id: contact.id,
+      due_date: event.start,
+      note: event.title,
+      notify_before_minutes: 30,
+    }).subscribe(() => {
+      this.crmSaved.update(s => new Set([...s, event.id]));
+    });
+  }
+
+  formatCrmDate(iso: string): string {
+    return new Date(iso).toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short' });
   }
 
   ngOnInit(): void {

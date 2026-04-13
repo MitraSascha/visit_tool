@@ -207,6 +207,34 @@
     font-weight: 700;
     @include flex-center;
     flex-shrink: 0;
+    overflow: hidden;
+    transition: width 120ms ease-out, height 120ms ease-out, border-radius 120ms ease-out;
+  }
+
+  &--has-photo &__avatar {
+    width: 80px;
+    height: 52px;
+    border-radius: 6px;
+    background: $bg-surface-2;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.35);
+  }
+
+  &__avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  &__initial {
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  // Grid needs wider left column when photo is present
+  &--has-photo {
+    grid-template-columns: 80px 1fr auto;
   }
 
   &__body {

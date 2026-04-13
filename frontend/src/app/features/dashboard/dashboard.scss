@@ -11,29 +11,32 @@
   @include responsive(sm) { padding: 0 1.5rem 3rem; }
 }
 
-// ── Header ──────────────────────────────────────────────────────────────
+// ── Begrüßung ────────────────────────────────────────────────────────────
 
-.dashboard-header {
+.greeting-section {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  padding: 1.5rem 0 1.5rem;
-  flex-wrap: wrap;
+  padding: 1.5rem 0 1.25rem;
   gap: 0.75rem;
-
-  h1 {
-    font-size: 1.75rem;
-    font-weight: 800;
-    color: $text-primary;
-    margin: 0;
-    letter-spacing: -0.02em;
-  }
+  flex-wrap: wrap;
 }
 
-.subtitle {
-  font-size: 0.875rem;
+.greeting-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: $text-primary;
+  margin: 0;
+  letter-spacing: -0.02em;
+
+  @include responsive(sm) { font-size: 1.875rem; }
+}
+
+.greeting-date {
+  font-size: 0.8125rem;
   color: $text-muted;
   margin: 0.25rem 0 0;
+  text-transform: capitalize;
 }
 
 // ── KPI Grid ────────────────────────────────────────────────────────────
@@ -68,7 +71,7 @@
 
   &--accent {
     border-color: rgba($primary, 0.25);
-    background: linear-gradient(135deg, $bg-surface-1, rgba($primary, 0.04));
+    background: linear-gradient(135deg, $bg-surface-1, rgba($primary, 0.05));
   }
 
   &--alert {
@@ -122,6 +125,137 @@
   font-size: 0.75rem;
   color: $text-muted;
   margin-top: 0.125rem;
+}
+
+// ── Anstehende Erinnerungen ───────────────────────────────────────────────
+
+.reminders-section {
+  margin-bottom: 1.25rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.section-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0;
+}
+
+.section-link {
+  font-size: 0.78rem;
+  color: $primary;
+  text-decoration: none;
+  font-weight: 600;
+
+  &:hover { text-decoration: underline; }
+}
+
+.reminder-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.625rem;
+
+  @include responsive(sm) { grid-template-columns: repeat(4, 1fr); }
+}
+
+.reminder-card {
+  background: $bg-surface-1;
+  border: 1px solid $glass-border;
+  border-radius: $border-radius;
+  padding: 0.875rem;
+  text-decoration: none;
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  position: relative;
+  @include transition-quick;
+
+  &:hover {
+    border-color: rgba(255,255,255,0.15);
+    transform: translateY(-1px);
+  }
+
+  &--overdue {
+    border-color: rgba($error, 0.35);
+    background: rgba($error, 0.04);
+  }
+}
+
+.reminder-card__date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba($primary, 0.1);
+  border: 1px solid rgba($primary, 0.2);
+  border-radius: 8px;
+  padding: 0.375rem 0.5rem;
+  min-width: 36px;
+  flex-shrink: 0;
+
+  .reminder-card--overdue & {
+    background: rgba($error, 0.12);
+    border-color: rgba($error, 0.3);
+  }
+}
+
+.reminder-card__day {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: $primary;
+  line-height: 1;
+
+  .reminder-card--overdue & { color: $error; }
+}
+
+.reminder-card__mon {
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: $text-muted;
+  letter-spacing: 0.05em;
+}
+
+.reminder-card__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.reminder-card__note {
+  font-size: 0.8125rem;
+  color: $text-secondary;
+  margin: 0;
+  @include truncate;
+
+  &--empty { color: $text-muted; font-style: italic; }
+}
+
+.reminder-card__time {
+  font-size: 0.72rem;
+  color: $text-muted;
+}
+
+.overdue-chip {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: $error;
+  background: rgba($error, 0.12);
+  border: 1px solid rgba($error, 0.25);
+  border-radius: 4px;
+  padding: 1px 5px;
 }
 
 // ── Charts ──────────────────────────────────────────────────────────────
@@ -272,6 +406,19 @@
     transform: translateY(-1px);
   }
   &:active { transform: scale(0.97); }
+
+  // Primärer Quick-Button (Scannen)
+  &--primary {
+    border-color: rgba($primary, 0.3);
+    background: rgba($primary, 0.06);
+    color: $primary;
+
+    &:hover {
+      background: rgba($primary, 0.12);
+      border-color: rgba($primary, 0.5);
+      color: $primary;
+    }
+  }
 }
 
 // ── Buttons ──────────────────────────────────────────────────────────────
@@ -287,6 +434,14 @@
   transition: all 0.15s ease;
   font-family: inherit;
   text-decoration: none;
+  border: none;
+
+  &--primary {
+    background: $primary;
+    color: $text-on-primary;
+    padding: 0.55rem 1.125rem;
+    &:hover { background: $primary-light; }
+  }
 
   &--ghost {
     background: transparent;

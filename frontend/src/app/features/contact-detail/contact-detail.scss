@@ -338,6 +338,199 @@
   overflow: hidden;
 }
 
+.action-panel__close-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem 0.5rem;
+  border-bottom: 1px solid $glass-border;
+}
+
+.action-panel__label {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.share-close {
+  background: none;
+  border: none;
+  color: $text-muted;
+  font-size: 0.875rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-family: inherit;
+  @include transition-quick;
+  &:hover { color: $text-primary; background: rgba(255,255,255,0.06); }
+}
+
+.share-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem 1rem;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__title {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: $text-primary;
+  }
+
+  &__text {
+    width: 100%;
+    background: $bg-surface-2;
+    border: 1px solid $glass-border;
+    border-radius: $border-radius;
+    color: $text-secondary;
+    font-size: 0.875rem;
+    font-family: inherit;
+    padding: 0.625rem 0.75rem;
+    resize: none;
+    line-height: 1.6;
+    outline: none;
+    box-sizing: border-box;
+  }
+}
+
+.btn--primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  background: $primary;
+  color: $text-on-primary;
+  border: none;
+  border-radius: $border-radius;
+  padding: 0.55rem 1.125rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  @include transition-quick;
+  &:hover { background: $primary-light; }
+}
+
+// ── CRM Panel ────────────────────────────────────────────────────────────
+
+.btn--crm {
+  border-color: rgba(96, 165, 250, 0.35);
+  color: #93c5fd;
+  &:hover:not(:disabled) {
+    background: rgba(96, 165, 250, 0.1);
+    border-color: rgba(96, 165, 250, 0.6);
+    color: #bfdbfe;
+  }
+}
+
+.crm-panel__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.crm-days-select {
+  background: $bg-surface-2;
+  border: 1px solid $glass-border;
+  border-radius: $border-radius;
+  color: $text-primary;
+  font-size: 0.8125rem;
+  padding: 0.25rem 0.5rem;
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+  option { background: $bg-surface-2; }
+}
+
+.crm-panel__msg {
+  padding: 1rem;
+  font-size: 0.875rem;
+  color: $text-muted;
+  margin: 0;
+
+  &--error { color: $error; }
+}
+
+.crm-event-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem 0;
+}
+
+.crm-event {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid $glass-border;
+  @include transition-quick;
+
+  &:last-child { border-bottom: none; }
+
+  &--saved { opacity: 0.6; }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+  }
+
+  &__title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: $text-primary;
+    @include truncate;
+  }
+
+  &__time {
+    font-size: 0.78rem;
+    color: $text-secondary;
+  }
+
+  &__partners {
+    font-size: 0.75rem;
+    color: $text-muted;
+  }
+
+  &__save {
+    flex-shrink: 0;
+    background: rgba($primary, 0.12);
+    border: 1px solid rgba($primary, 0.3);
+    border-radius: $border-radius;
+    color: $primary;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.35rem 0.75rem;
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+    @include transition-quick;
+
+    &:hover:not(:disabled) {
+      background: rgba($primary, 0.2);
+      border-color: $primary;
+    }
+
+    &--done {
+      background: transparent;
+      border-color: $glass-border;
+      color: $text-muted;
+      cursor: default;
+    }
+
+    &:disabled { opacity: 0.7; cursor: default; }
+  }
+}
+
 // ── Print ─────────────────────────────────────────────────────────────────
 
 @media print {

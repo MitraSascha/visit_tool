@@ -9,6 +9,34 @@
     </button>
   </header>
 
+  <!-- ── Push-Benachrichtigungs-Banner ──────────────────────────────── -->
+  @if (push.isSupported && !push.subscribed()) {
+    <div class="push-banner" [class.push-banner--loading]="pushStatus() === 'loading'">
+      @if (pushStatus() === 'denied') {
+        <span class="push-banner__icon">🚫</span>
+        <span class="push-banner__text">Benachrichtigungen wurden blockiert. Bitte in den Browser-Einstellungen erlauben.</span>
+      } @else if (pushStatus() === 'unsupported') {
+        <span class="push-banner__icon">ℹ️</span>
+        <span class="push-banner__text">Push-Benachrichtigungen werden in diesem Browser nicht unterstützt.</span>
+      } @else {
+        <span class="push-banner__icon">🔔</span>
+        <div class="push-banner__body">
+          <span class="push-banner__text">Lass dein Handy klingeln wenn eine Erinnerung fällig ist.</span>
+        </div>
+        <button class="btn btn--push" (click)="enablePush()" [disabled]="pushStatus() === 'loading'">
+          {{ pushStatus() === 'loading' ? 'Wird aktiviert…' : 'Benachrichtigungen aktivieren' }}
+        </button>
+      }
+    </div>
+  }
+
+  @if (push.subscribed()) {
+    <div class="push-active">
+      <span>🔔 Benachrichtigungen aktiv</span>
+      <button class="push-active__off" (click)="push.unsubscribe()">Deaktivieren</button>
+    </div>
+  }
+
   @if (showForm()) {
     <form class="add-form" (ngSubmit)="submitForm()">
       <!-- Kontakt-Suche -->
@@ -68,6 +96,19 @@
         />
       </div>
 
+      <!-- Benachrichtigung -->
+      <div class="form-row">
+        <label>🔔 Benachrichtigung</label>
+        <select
+          [value]="newNotifyBefore()"
+          (change)="newNotifyBefore.set(+$any($event.target).value)"
+        >
+          @for (opt of notifyBeforeOptions; track opt.value) {
+            <option [value]="opt.value">{{ opt.label }}</option>
+          }
+        </select>
+      </div>
+
       <!-- Notiz -->
       <div class="form-row">
         <label>Notiz (optional)</label>
@@ -82,12 +123,77 @@
       <button
         type="submit"
         class="btn btn--primary"
-        [disabled]="!selectedContact() || !newDueDate()"
+        [disabled]="!newDueDate()"
       >
         Erinnerung speichern
       </button>
     </form>
   }
+
+  <!-- ── CRM-Termine ───────────────────────────────────────────────── -->
+  <div class="crm-section">
+    <button class="crm-section__toggle" (click)="toggleCrm()">
+      <span>📅 CRM-Termine aus Hero</span>
+      <span class="crm-section__chevron" [class.crm-section__chevron--open]="showCrm()">▾</span>
+    </button>
+
+    @if (showCrm()) {
+      <div class="crm-section__body">
+        <div class="crm-section__toolbar">
+          <select class="crm-days-select"
+                  [value]="crmDays()"
+                  (change)="changeCrmDays(+$any($event.target).value)">
+            @for (opt of crmDayOptions; track opt.value) {
+              <option [value]="opt.value">{{ opt.label }}</option>
+            }
+          </select>
+          <button class="btn btn--ghost btn--sm" (click)="loadCrmEvents()" [disabled]="crmLoading()">
+            {{ crmLoading() ? 'Lädt…' : '↺ Neu laden' }}
+          </button>
+        </div>
+
+        @if (crmLoading()) {
+          <p class="crm-msg">Lade Termine…</p>
+        } @else if (crmError()) {
+          <p class="crm-msg crm-msg--error">{{ crmError() }}</p>
+        } @else if (crmEvents().length === 0) {
+          <p class="crm-msg">Keine Termine im gewählten Zeitraum.</p>
+        } @else {
+          <ul class="crm-event-list">
+            @for (event of crmEvents(); track event.id) {
+              <li class="crm-event" [class.crm-event--saved]="crmSaved().has(event.id)">
+                <div class="crm-event__info">
+                  <span class="crm-event__title">{{ event.title }}</span>
+                  <span class="crm-event__time">🕐 {{ formatCrmDate(event.start) }}</span>
+                </div>
+                <div class="crm-event__actions">
+                  @if (!crmSaved().has(event.id)) {
+                    <select
+                      class="crm-notify-select"
+                      [value]="getCrmNotify(event.id)"
+                      (change)="setCrmNotify(event.id, +$any($event.target).value)"
+                    >
+                      @for (opt of notifyBeforeOptions; track opt.value) {
+                        <option [value]="opt.value">{{ opt.label }}</option>
+                      }
+                    </select>
+                  }
+                  <button
+                    class="crm-event__btn"
+                    [class.crm-event__btn--done]="crmSaved().has(event.id)"
+                    [disabled]="crmSaved().has(event.id)"
+                    (click)="saveCrmAsReminder(event)"
+                  >
+                    @if (crmSaved().has(event.id)) { ✓ Übernommen } @else { + Übernehmen }
+                  </button>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+    }
+  </div>
 
   <!-- Erinnerungen-Liste -->
   <div class="reminders-list">
@@ -106,15 +212,22 @@
         </button>
 
         <div class="reminder-body">
-          <a class="reminder-contact" [routerLink]="['/contacts', r.contact_id]">
-            {{ contactName(r.contact_id) }}
-          </a>
+          @if (r.contact_id) {
+            <a class="reminder-contact" [routerLink]="['/contacts', r.contact_id]">
+              {{ contactName(r.contact_id) }}
+            </a>
+          } @else {
+            <span class="reminder-contact reminder-contact--crm">📅 CRM-Termin</span>
+          }
           <div class="reminder-due" [class.reminder-due--overdue]="isOverdue(r)">
             <span class="due-icon">🕐</span>
             {{ formatDate(r.due_date) }}
             @if (isOverdue(r)) {
               <span class="overdue-badge">Überfällig</span>
             }
+          </div>
+          <div class="reminder-notify">
+            🔔 {{ notifyBeforeLabel(r.notify_before_minutes) }}
           </div>
           @if (r.note) {
             <p class="reminder-note">{{ r.note }}</p>

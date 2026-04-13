@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil, switchMap } from 'rxjs';
 import { ContactApiService } from '../../../core/services/contact-api.service';
+import { AssetApiService } from '../../../core/services/asset-api.service';
 import { PartnerContact, CATEGORIES } from '../../../core/models/contact.model';
 
 @Component({
@@ -18,8 +19,9 @@ import { PartnerContact, CATEGORIES } from '../../../core/models/contact.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContactsList implements OnInit, OnDestroy {
-  private readonly api     = inject(ContactApiService);
-  private readonly destroy = new Subject<void>();
+  private readonly api      = inject(ContactApiService);
+  private readonly assetApi = inject(AssetApiService);
+  private readonly destroy  = new Subject<void>();
 
   readonly categories = CATEGORIES;
 
@@ -81,6 +83,11 @@ export class ContactsList implements OnInit, OnDestroy {
     this.filterCategory.set('');
     this.filterCity.set('');
     this.filterWorked.set('');
+  }
+
+  frontImage(c: PartnerContact): string | null {
+    const asset = c.assets?.find(a => a.type === 'front');
+    return asset ? this.assetApi.resolveUrl(asset.file_path) : null;
   }
 
   ratingStars(rating: number | null): string {

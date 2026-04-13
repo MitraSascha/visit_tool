@@ -1,14 +1,17 @@
 <div class="dashboard-page">
 
-  <header class="dashboard-header">
-    <div>
-      <h1>Dashboard</h1>
-      <p class="subtitle">Ihr Überblick auf einen Blick</p>
-    </div>
-    <a routerLink="/contacts" class="btn btn--ghost btn--sm">Alle Kontakte →</a>
-  </header>
+  @if (data$ | async; as data) {
 
-  @if (stats$ | async; as stats) {
+    <!-- ── Begrüßung ──────────────────────────────────────────────────── -->
+    <header class="greeting-section">
+      <div class="greeting-text">
+        <h1 class="greeting-title">{{ greeting }} 👋</h1>
+        <p class="greeting-date">{{ todayLabel }}</p>
+      </div>
+      <a routerLink="/new" class="btn btn--primary btn--sm">
+        <span>➕</span> Neu anlegen
+      </a>
+    </header>
 
     <!-- ── KPI-Karten ──────────────────────────────────────────────────── -->
     <div class="kpi-grid">
@@ -16,7 +19,7 @@
       <a routerLink="/contacts" class="kpi-card kpi-card--link">
         <div class="kpi-icon">🏢</div>
         <div class="kpi-body">
-          <span class="kpi-value">{{ stats.total_contacts }}</span>
+          <span class="kpi-value">{{ data.stats.total_contacts }}</span>
           <span class="kpi-label">Kontakte gesamt</span>
         </div>
       </a>
@@ -24,36 +27,68 @@
       <a routerLink="/contacts" class="kpi-card kpi-card--link kpi-card--accent">
         <div class="kpi-icon">🆕</div>
         <div class="kpi-body">
-          <span class="kpi-value">{{ stats.recently_added }}</span>
+          <span class="kpi-value">{{ data.stats.recently_added }}</span>
           <span class="kpi-label">Neue (30 Tage)</span>
         </div>
       </a>
 
       <a routerLink="/reminders"
          class="kpi-card kpi-card--link"
-         [class.kpi-card--alert]="stats.overdue_reminders_count > 0">
-        <div class="kpi-icon">{{ stats.overdue_reminders_count > 0 ? '⚠️' : '🔔' }}</div>
+         [class.kpi-card--alert]="data.stats.overdue_reminders_count > 0">
+        <div class="kpi-icon">{{ data.stats.overdue_reminders_count > 0 ? '⚠️' : '🔔' }}</div>
         <div class="kpi-body">
-          <span class="kpi-value">{{ stats.overdue_reminders_count }}</span>
-          <span class="kpi-label">Überfällige Erinnerungen</span>
+          <span class="kpi-value">{{ data.stats.overdue_reminders_count }}</span>
+          <span class="kpi-label">Überfällige Alerts</span>
         </div>
-        @if (stats.overdue_reminders_count > 0) {
+        @if (data.stats.overdue_reminders_count > 0) {
           <span class="kpi-action">Jetzt prüfen →</span>
         }
       </a>
 
-      <div class="kpi-card" [class.kpi-card--warn]="stats.contacts_without_rating > 0">
+      <div class="kpi-card" [class.kpi-card--warn]="data.stats.contacts_without_rating > 0">
         <div class="kpi-icon">⭐</div>
         <div class="kpi-body">
-          <span class="kpi-value">{{ stats.avg_rating ? (stats.avg_rating | number:'1.1-1') : '–' }}</span>
+          <span class="kpi-value">{{ data.stats.avg_rating ? (data.stats.avg_rating | number:'1.1-1') : '–' }}</span>
           <span class="kpi-label">Ø Bewertung</span>
         </div>
-        @if (stats.contacts_without_rating > 0) {
-          <span class="kpi-subinfo">{{ stats.contacts_without_rating }} ohne Bewertung</span>
+        @if (data.stats.contacts_without_rating > 0) {
+          <span class="kpi-subinfo">{{ data.stats.contacts_without_rating }} ohne Bewertung</span>
         }
       </div>
 
     </div>
+
+    <!-- ── Anstehende Erinnerungen ────────────────────────────────────── -->
+    @if (data.upcoming.length > 0) {
+      <section class="reminders-section">
+        <div class="section-header">
+          <h2 class="section-title">🔔 Anstehende Erinnerungen</h2>
+          <a routerLink="/reminders" class="section-link">Alle anzeigen →</a>
+        </div>
+        <div class="reminder-cards">
+          @for (r of data.upcoming; track r.id) {
+            <a [routerLink]="['/contacts', r.contact_id]" class="reminder-card"
+               [class.reminder-card--overdue]="isOverdue(r)">
+              <div class="reminder-card__date">
+                <span class="reminder-card__day">{{ r.due_date | date:'dd' }}</span>
+                <span class="reminder-card__mon">{{ r.due_date | date:'MM' }}</span>
+              </div>
+              <div class="reminder-card__body">
+                @if (r.note) {
+                  <p class="reminder-card__note">{{ r.note }}</p>
+                } @else {
+                  <p class="reminder-card__note reminder-card__note--empty">Keine Notiz</p>
+                }
+                <span class="reminder-card__time">{{ r.due_date | date:'HH:mm' }} Uhr</span>
+              </div>
+              @if (isOverdue(r)) {
+                <span class="overdue-chip">Überfällig</span>
+              }
+            </a>
+          }
+        </div>
+      </section>
+    }
 
     <!-- ── Charts ─────────────────────────────────────────────────────── -->
     <div class="charts-grid">
@@ -61,21 +96,21 @@
       <div class="chart-card">
         <div class="chart-card__header">
           <h2 class="chart-title">Nach Kategorie</h2>
-          <span class="chart-total">{{ stats.contacts_by_category.length }} Kategorien</span>
+          <span class="chart-total">{{ data.stats.contacts_by_category.length }} Kategorien</span>
         </div>
         <div class="bar-list">
-          @for (item of stats.contacts_by_category; track item.name) {
+          @for (item of data.stats.contacts_by_category; track item.name) {
             <div class="bar-row">
               <span class="bar-label" [title]="item.name">{{ item.name }}</span>
               <div class="bar-track">
                 <div class="bar-fill"
-                     [style.width.%]="barPercent(item.count, stats.contacts_by_category)">
+                     [style.width.%]="barPercent(item.count, data.stats.contacts_by_category)">
                 </div>
               </div>
               <span class="bar-count">{{ item.count }}</span>
             </div>
           }
-          @if (stats.contacts_by_category.length === 0) {
+          @if (data.stats.contacts_by_category.length === 0) {
             <p class="chart-empty">Noch keine Kategorien vergeben</p>
           }
         </div>
@@ -84,23 +119,23 @@
       <div class="chart-card">
         <div class="chart-card__header">
           <h2 class="chart-title">Nach Priorität</h2>
-          <span class="chart-total">{{ stats.total_contacts }} gesamt</span>
+          <span class="chart-total">{{ data.stats.total_contacts }} gesamt</span>
         </div>
         <div class="bar-list">
-          @for (item of stats.contacts_by_priority; track item.name) {
+          @for (item of data.stats.contacts_by_priority; track item.name) {
             <div class="bar-row">
               <span class="bar-label priority-label priority-label--{{ item.name }}">
                 {{ priorityLabel(item.name) }}
               </span>
               <div class="bar-track">
                 <div class="bar-fill bar-fill--{{ item.name }}"
-                     [style.width.%]="barPercent(item.count, stats.contacts_by_priority)">
+                     [style.width.%]="barPercent(item.count, data.stats.contacts_by_priority)">
                 </div>
               </div>
               <span class="bar-count">{{ item.count }}</span>
             </div>
           }
-          @if (stats.contacts_by_priority.length === 0) {
+          @if (data.stats.contacts_by_priority.length === 0) {
             <p class="chart-empty">Noch keine Prioritäten vergeben</p>
           }
         </div>
@@ -112,13 +147,13 @@
     <div class="quick-actions">
       <h3 class="quick-title">Schnellzugriff</h3>
       <div class="quick-grid">
-        <a routerLink="/capture" class="quick-btn">
+        <a routerLink="/capture" class="quick-btn quick-btn--primary">
           <span class="quick-icon">📸</span>
-          <span>Visitenkarte scannen</span>
+          <span>Karte scannen</span>
         </a>
         <a routerLink="/new" class="quick-btn">
           <span class="quick-icon">➕</span>
-          <span>Kontakt anlegen</span>
+          <span>Neu anlegen</span>
         </a>
         <a routerLink="/map" class="quick-btn">
           <span class="quick-icon">🗺</span>

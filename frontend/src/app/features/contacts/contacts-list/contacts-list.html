@@ -72,10 +72,15 @@
         *cdkVirtualFor="let c of filteredContacts(); trackBy: (i, c) => c.id"
         [routerLink]="['/contacts', c.id]"
         class="contact-card"
+        [class.contact-card--has-photo]="!!frontImage(c)"
       >
         <!-- Linke Seite -->
         <div class="contact-card__avatar">
-          {{ c.company_name[0] }}
+          @if (frontImage(c); as img) {
+            <img [src]="img" [alt]="c.company_name" class="contact-card__avatar-img" />
+          } @else {
+            <span class="contact-card__initial">{{ c.company_name[0] }}</span>
+          }
         </div>
 
         <!-- Mitte -->

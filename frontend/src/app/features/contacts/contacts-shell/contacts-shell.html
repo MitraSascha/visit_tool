@@ -22,12 +22,6 @@
         </a>
       </li>
       <li>
-        <a routerLink="/map" routerLinkActive="active" class="nav-link">
-          <span class="nav-icon">🗺</span>
-          <span class="nav-label">Karte</span>
-        </a>
-      </li>
-      <li>
         <a routerLink="/reminders" routerLinkActive="active" class="nav-link">
           <span class="nav-icon">🔔</span>
           <span class="nav-label">Erinnerungen</span>
@@ -37,6 +31,12 @@
         <a routerLink="/projects" routerLinkActive="active" class="nav-link">
           <span class="nav-icon">🏗</span>
           <span class="nav-label">Projekte</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/map" routerLinkActive="active" class="nav-link">
+          <span class="nav-icon">🗺</span>
+          <span class="nav-label">Karte</span>
         </a>
       </li>
       <li>
@@ -73,6 +73,29 @@
     <router-outlet />
   </main>
 
+  <!-- ── Mehr-Backdrop (Mobile) ────────────────────────────────────────── -->
+  @if (showMore()) {
+    <div class="more-backdrop" (click)="showMore.set(false)"></div>
+    <div class="more-sheet" role="menu">
+      <a routerLink="/map" routerLinkActive="active" class="more-sheet__item">
+        <span class="nav-icon">🗺</span>
+        <span>Karte</span>
+      </a>
+      <a routerLink="/projects" routerLinkActive="active" class="more-sheet__item">
+        <span class="nav-icon">🏗</span>
+        <span>Projekte</span>
+      </a>
+      <a routerLink="/groups" routerLinkActive="active" class="more-sheet__item">
+        <span class="nav-icon">👥</span>
+        <span>Gruppen</span>
+      </a>
+      <a routerLink="/activity-log" routerLinkActive="active" class="more-sheet__item">
+        <span class="nav-icon">📜</span>
+        <span>Aktivitäten</span>
+      </a>
+    </div>
+  }
+
   <!-- ── Bottom-Nav (Mobile < 640px) ──────────────────────────────────── -->
   <nav class="bottom-nav">
     <a routerLink="/contacts" routerLinkActive="active"
@@ -86,15 +109,18 @@
     </a>
     <a routerLink="/capture" routerLinkActive="active" class="bottom-nav__item bottom-nav__item--capture">
       <span class="capture-btn">📸</span>
+      <span>Erfassen</span>
     </a>
     <a routerLink="/reminders" routerLinkActive="active" class="bottom-nav__item">
       <span class="nav-icon">🔔</span>
       <span>Alerts</span>
     </a>
-    <a routerLink="/map" routerLinkActive="active" class="bottom-nav__item">
-      <span class="nav-icon">🗺</span>
-      <span>Karte</span>
-    </a>
+    <button type="button" class="bottom-nav__item bottom-nav__item--more"
+            [class.active]="isMoreRoute() || showMore()"
+            (click)="toggleMore()">
+      <span class="nav-icon">{{ showMore() ? '✕' : '••' }}</span>
+      <span>Mehr</span>
+    </button>
   </nav>
 
 </div>

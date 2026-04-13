@@ -12,6 +12,11 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:7842"
     anthropic_api_key: str = ""
 
+    # Hero CRM
+    hero_api_url: str = ""
+    hero_api_token: str = ""
+    hero_partner_id: int = 0
+
     model_config = {"env_file": ".env"}
 
 

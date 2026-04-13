@@ -36,16 +36,109 @@
             <button class="btn btn--ghost" (click)="printContact()" title="Drucken">
               🖨 Drucken
             </button>
-            <button class="btn btn--ghost" (click)="showQr.update(v => !v)" title="QR / vCard">
+            <button class="btn btn--ghost" (click)="openQr()" title="QR / vCard">
               📱 QR
             </button>
-            <button class="btn btn--ghost" (click)="showDuplicates.update(v => !v)" title="Duplikate prüfen">
+            <button class="btn btn--ghost" (click)="openDuplicates()" title="Duplikate prüfen">
               🔍 Duplikate
+            </button>
+            <button class="btn btn--ghost btn--crm" (click)="openCrm()" title="Termine aus Hero CRM">
+              📅 CRM-Termine
             </button>
           }
         }
       </div>
     </header>
+
+    <!-- ── SHARE / QR / DUPLIKATE (über dem Viewer, sofort sichtbar) ── -->
+    <div #actionPanel></div>
+    @if (showShare()) {
+      <div class="action-panel">
+        <div class="share-panel">
+          <div class="share-panel__header">
+            <span class="share-panel__title">↗ Kontakt teilen</span>
+            <button type="button" class="share-close" (click)="showShare.set(false)">✕</button>
+          </div>
+          <textarea class="share-panel__text" readonly rows="7">{{ shareText() }}</textarea>
+          <button type="button" class="btn btn--primary" (click)="copyShareText()">
+            📋 In Zwischenablage kopieren
+          </button>
+        </div>
+      </div>
+    }
+
+    @if (showQr()) {
+      <div class="action-panel">
+        <div class="action-panel__close-row">
+          <span class="action-panel__label">📱 QR-Code / vCard</span>
+          <button type="button" class="share-close" (click)="showQr.set(false)">✕</button>
+        </div>
+        <app-qr-vcard [contact]="c" />
+      </div>
+    }
+
+    @if (showDuplicates()) {
+      <div class="action-panel">
+        <div class="action-panel__close-row">
+          <span class="action-panel__label">🔍 Duplikate prüfen</span>
+          <button type="button" class="share-close" (click)="showDuplicates.set(false)">✕</button>
+        </div>
+        <app-duplicate-dialog [contactId]="c.id" />
+      </div>
+    }
+
+    @if (showCrm()) {
+      <div class="action-panel crm-panel">
+        <div class="action-panel__close-row">
+          <span class="action-panel__label">📅 CRM-Termine</span>
+          <div class="crm-panel__controls">
+            <select class="crm-days-select"
+                    [value]="crmDays()"
+                    (change)="changeCrmDays(+$any($event.target).value)">
+              @for (opt of crmDayOptions; track opt.value) {
+                <option [value]="opt.value">{{ opt.label }}</option>
+              }
+            </select>
+            <button type="button" class="share-close" (click)="showCrm.set(false)">✕</button>
+          </div>
+        </div>
+
+        @if (crmLoading()) {
+          <p class="crm-panel__msg">Lade Termine…</p>
+        } @else if (crmError()) {
+          <p class="crm-panel__msg crm-panel__msg--error">{{ crmError() }}</p>
+        } @else if (crmEvents().length === 0) {
+          <p class="crm-panel__msg">Keine Termine im gewählten Zeitraum.</p>
+        } @else {
+          <ul class="crm-event-list">
+            @for (event of crmEvents(); track event.id) {
+              <li class="crm-event" [class.crm-event--saved]="crmSaved().has(event.id)">
+                <div class="crm-event__info">
+                  <span class="crm-event__title">{{ event.title }}</span>
+                  <span class="crm-event__time">
+                    🕐 {{ formatCrmDate(event.start) }}
+                    @if (event.end) { – {{ formatCrmDate(event.end) }} }
+                  </span>
+                  @if (event.partners.length) {
+                    <span class="crm-event__partners">👤 {{ event.partners.join(', ') }}</span>
+                  }
+                </div>
+                <button
+                  class="crm-event__save"
+                  [class.crm-event__save--done]="crmSaved().has(event.id)"
+                  [disabled]="crmSaved().has(event.id)"
+                  (click)="saveAsReminder(event)"
+                  title="Als Erinnerung speichern"
+                >
+                  @if (crmSaved().has(event.id)) { ✓ Gespeichert }
+                  @else { + Erinnerung }
+                </button>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+    }
 
     <!-- ── 3D KARTEN-VIEWER ────────────────────────────────────────── -->
     <section class="viewer-section">
@@ -54,18 +147,6 @@
         [backImageUrl]="backImageUrl()"
       />
     </section>
-
-    <!-- ── QR / VCARD & DUPLIKATE ───────────────────────────────────── -->
-    @if (showQr() && contact(); as c) {
-      <div class="action-panel">
-        <app-qr-vcard [contact]="c" />
-      </div>
-    }
-    @if (showDuplicates() && contact(); as c) {
-      <div class="action-panel">
-        <app-duplicate-dialog [contactId]="c.id" />
-      </div>
-    }
 
     <!-- ── INFO-SEKTIONEN ─────────────────────────────────────────── -->
     <div class="info-sections">

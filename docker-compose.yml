@@ -29,6 +29,9 @@ services:
       REFRESH_TOKEN_EXPIRE_DAYS: ${REFRESH_TOKEN_EXPIRE_DAYS:-7}
       UPLOAD_DIR: /app/uploads
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      HERO_API_URL: ${HERO_API_URL}
+      HERO_API_TOKEN: ${HERO_API_TOKEN}
+      HERO_PARTNER_ID: ${HERO_PARTNER_ID}
     volumes:
       - uploads:/app/uploads
     networks:

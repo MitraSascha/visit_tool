@@ -22,6 +22,76 @@
 
 .page-subtitle { font-size: 0.8125rem; color: $text-muted; margin: 0.2rem 0 0; }
 
+// ── Push-Banner ───────────────────────────────────────────────────────────
+
+.push-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba($primary, 0.07);
+  border: 1px solid rgba($primary, 0.2);
+  border-radius: $border-radius-lg;
+  padding: 0.875rem 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+
+  &--loading { opacity: 0.7; pointer-events: none; }
+
+  &__icon { font-size: 1.25rem; flex-shrink: 0; }
+
+  &__body { flex: 1; min-width: 0; }
+
+  &__text {
+    font-size: 0.875rem;
+    color: $text-secondary;
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.btn--push {
+  background: $primary;
+  color: $text-on-primary;
+  border: none;
+  border-radius: $border-radius;
+  padding: 0.5rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  @include transition-quick;
+  &:hover:not(:disabled) { background: $primary-light; }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+.push-active {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba($primary, 0.06);
+  border: 1px solid rgba($primary, 0.15);
+  border-radius: $border-radius-lg;
+  padding: 0.625rem 1rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.875rem;
+  color: $primary;
+  font-weight: 600;
+
+  &__off {
+    background: none;
+    border: 1px solid rgba($primary, 0.3);
+    color: $text-muted;
+    border-radius: $border-radius;
+    padding: 0.25rem 0.625rem;
+    font-size: 0.75rem;
+    cursor: pointer;
+    font-family: inherit;
+    @include transition-quick;
+    &:hover { color: $error; border-color: rgba($error, 0.4); }
+  }
+}
+
 // ── Formular ──────────────────────────────────────────────────────────────
 
 .add-form {
@@ -49,6 +119,7 @@
   }
 
   input[type="datetime-local"],
+  select,
   textarea {
     background: $bg-surface-2;
     border: 1px solid $glass-border;
@@ -61,6 +132,7 @@
     width: 100%;
     &:focus { border-color: rgba($primary, 0.4); }
   }
+  select { cursor: pointer; option { background: $bg-surface-2; } }
   textarea { resize: vertical; }
 }
 
@@ -208,6 +280,11 @@
   color: $text-primary;
   text-decoration: none;
   &:hover { color: $primary; }
+
+  &--crm {
+    color: #93c5fd;
+    font-weight: 600;
+  }
 }
 
 .reminder-due {
@@ -233,6 +310,11 @@
   font-weight: 700;
 }
 
+.reminder-notify {
+  font-size: 0.75rem;
+  color: $text-muted;
+}
+
 .reminder-note {
   font-size: 0.875rem;
   color: $text-secondary;
@@ -251,6 +333,191 @@
   font-size: 0.875rem;
   transition: all 0.15s ease;
   &:hover { color: $error; background: rgba($error, 0.1); }
+}
+
+// ── CRM-Termine ───────────────────────────────────────────────────────────
+
+.crm-section {
+  border: 1px solid rgba(96, 165, 250, 0.25);
+  border-radius: $border-radius-lg;
+  margin-bottom: 1.25rem;
+  overflow: hidden;
+
+  &__toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.875rem 1rem;
+    background: rgba(96, 165, 250, 0.06);
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #93c5fd;
+    @include transition-quick;
+
+    &:hover { background: rgba(96, 165, 250, 0.1); }
+  }
+
+  &__chevron {
+    font-size: 1rem;
+    transition: transform 200ms ease;
+    &--open { transform: rotate(180deg); }
+  }
+
+  &__body {
+    border-top: 1px solid rgba(96, 165, 250, 0.2);
+  }
+
+  &__toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid $glass-border;
+    flex-wrap: wrap;
+  }
+}
+
+.crm-notify-select {
+  background: $bg-surface-2;
+  border: 1px solid rgba(96, 165, 250, 0.3);
+  border-radius: $border-radius;
+  color: #93c5fd;
+  font-size: 0.8125rem;
+  padding: 0.4rem 0.625rem;
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+  // Mobil: genug Breite damit der Text nicht abgeschnitten wird
+  min-width: 0;
+  flex: 1;
+  max-width: 180px;
+  option { background: $bg-surface-2; color: $text-primary; }
+
+  @include responsive(sm) {
+    flex: none;
+    width: auto;
+  }
+}
+
+.crm-days-select {
+  background: $bg-surface-2;
+  border: 1px solid $glass-border;
+  border-radius: $border-radius;
+  color: $text-primary;
+  font-size: 0.8125rem;
+  padding: 0.3rem 0.6rem;
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+  option { background: $bg-surface-2; }
+}
+
+.crm-msg {
+  padding: 1rem;
+  font-size: 0.875rem;
+  color: $text-muted;
+  margin: 0;
+  &--error { color: $error; }
+}
+
+.crm-event-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.crm-event {
+  // Mobile: zweizeilig — Info oben, Aktionen unten
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid $glass-border;
+  @include transition-quick;
+
+  &:last-child { border-bottom: none; }
+  &--saved { opacity: 0.55; }
+
+  // Desktop: nebeneinander
+  @include responsive(sm) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+    flex: 1;
+  }
+
+  &__title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: $text-primary;
+    line-height: 1.35;
+    // Mobil: voller Text, kein Abschneiden
+    word-break: break-word;
+
+    @include responsive(sm) {
+      font-size: 0.875rem;
+      @include truncate;
+    }
+  }
+
+  &__time {
+    font-size: 0.8125rem;
+    color: $text-muted;
+    font-weight: 500;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    // Mobil: Aktionen linksbündig unter dem Titel
+    flex-wrap: wrap;
+
+    @include responsive(sm) {
+      flex-shrink: 0;
+      flex-wrap: nowrap;
+    }
+  }
+
+  &__btn {
+    background: rgba(96, 165, 250, 0.1);
+    border: 1px solid rgba(96, 165, 250, 0.3);
+    border-radius: $border-radius;
+    color: #93c5fd;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    padding: 0.4rem 0.875rem;
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+    @include transition-quick;
+
+    &:hover:not(:disabled) {
+      background: rgba(96, 165, 250, 0.2);
+      border-color: #93c5fd;
+    }
+
+    &--done {
+      background: transparent;
+      border-color: $glass-border;
+      color: $text-muted;
+      cursor: default;
+    }
+
+    &:disabled { opacity: 0.7; cursor: default; }
+  }
 }
 
 // ── Buttons ───────────────────────────────────────────────────────────────
@@ -282,7 +549,13 @@
     background: transparent;
     color: $text-secondary;
     border: 1px solid $glass-border;
-    &:hover { background: rgba(255,255,255,0.06); color: $text-primary; }
+    &:hover:not(:disabled) { background: rgba(255,255,255,0.06); color: $text-primary; }
+    &:disabled { opacity: 0.45; cursor: not-allowed; }
+  }
+
+  &--sm {
+    padding: 0.3rem 0.7rem;
+    font-size: 0.8rem;
   }
 }
 

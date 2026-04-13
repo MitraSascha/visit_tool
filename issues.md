@@ -1,6 +1,24 @@
 # Issues
 
-1. Wenn ich z.b auf Karte oder Projekte bin, wird mir die Navigation nicht angezeigt. bitte kontrollieren, ob überall die Navigation angezeigt wird! Desweiteren, bitte die Navigation Sortieren. 
-2. Thema Erinnerungen. Was ist mit Kontakt-ID gemeint? Bitte andere möglichkeit verwenden um eine erinnerung an einen Kontakt zu knüpfen!
-3. Dashboard wird irgendwie leer und nichtssagend. Schöner, intuitiver, mehr leben rein bringen
-4. Kontrolle Mobile version, Tablet version, PC Version. Alle 3 Versionen müssen gut aussehen, Intuitiv sein, Barrierefrei sein! Gerade weil wir das als PWA anbieten werden, muss die Mobile und Tablet version perfekt sein und wie eine App aussehen!
+1. Import von Terminen aus meinem CRM-System ins tool.
+
+    - API endnpunkte: 
+
+    Person von der wir die Termine abrufen:
+    
+"id": 
+94314,  
+"full_name": 
+"Patrick van Dalen",
+"user": 
+"id": 
+245920,
+"email": 
+"hey@mitra-sanitaer.de"
+
+Alle termine Abrufen (muss entsprechend angepasst werden): 
+{
+  "query": "{ global_search(term: \"Termin\", category: calendar_events, first: 10) { ... on CalendarEvent { id title start end } } }"
+}
+
+URL und Key habe ich in der .env gespeichert
