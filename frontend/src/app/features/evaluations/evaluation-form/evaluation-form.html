@@ -1,0 +1,42 @@
+<div class="eval-page">
+  <header class="eval-header">
+    <a [routerLink]="['/contacts', contactId()]" class="back-link">← Zurück</a>
+    <h1>Bewertung</h1>
+    <p class="eval-subtitle">Kontakt #{{ contactId() }} bewerten</p>
+  </header>
+
+  @if (submitted()) {
+    <div class="success-card">
+      <span class="success-icon">✓</span>
+      <p>Bewertung gespeichert!</p>
+      <a [routerLink]="['/contacts', contactId()]" class="btn btn--primary">Zurück zum Kontakt</a>
+    </div>
+  } @else {
+    <form class="eval-form" (ngSubmit)="submit()">
+      @for (criterion of criteria; track criterion.key) {
+        <div class="criterion-row">
+          <span class="criterion-label">{{ criterion.label }}</span>
+          <div class="stars">
+            @for (star of [1,2,3,4,5]; track star) {
+              <button type="button" class="star-btn"
+                [class.star-btn--filled]="getCriterionValue(criterion.key) >= star"
+                (click)="setCriterionValue(criterion.key, star)">
+                ★
+              </button>
+            }
+            <span class="star-value">{{ getCriterionValue(criterion.key) }}/5</span>
+          </div>
+        </div>
+      }
+
+      <div class="form-row">
+        <label>Notiz (optional)</label>
+        <textarea [value]="note()" (input)="note.set($any($event.target).value)" rows="3" placeholder="Zusätzliche Anmerkungen..."></textarea>
+      </div>
+
+      @if (error()) { <p class="error-msg">{{ error() }}</p> }
+
+      <button type="submit" class="btn btn--primary btn--full">Bewertung speichern</button>
+    </form>
+  }
+</div>

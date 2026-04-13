@@ -1,0 +1,23 @@
+@use 'styles/variables' as *;
+@use 'styles/mixins' as *;
+@use 'sass:color';
+
+.projects-page { padding: 0 0.875rem 3rem; max-width: 800px; margin: 0 auto; @include responsive(sm) { padding: 0 1.5rem 3rem; } }
+
+.page-header { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 0 1rem; flex-wrap: wrap; gap: 0.75rem; h1 { font-size: 1.5rem; font-weight: 700; color: $text-primary; margin: 0; } }
+
+.add-form { background: $bg-surface-1; border: 1px solid $glass-border; border-radius: $border-radius-lg; padding: 1.25rem; margin-bottom: 1.25rem; display: flex; flex-direction: column; gap: 0.875rem; }
+.form-row { display: flex; flex-direction: column; gap: 0.25rem; label { font-size: 0.8125rem; font-weight: 600; color: $text-muted; text-transform: uppercase; letter-spacing: 0.06em; } input, textarea, select { background: $bg-surface-2; border: 1px solid $glass-border; border-radius: $border-radius; color: $text-primary; font-size: 0.9375rem; padding: 0.5rem 0.75rem; font-family: inherit; outline: none; width: 100%; &:focus { border-color: rgba($primary, 0.4); } } textarea { resize: vertical; } select { cursor: pointer; } }
+
+.projects-list { display: flex; flex-direction: column; gap: 0.75rem; }
+.project-card { background: $bg-surface-1; border: 1px solid $glass-border; border-radius: $border-radius-lg; padding: 1rem 1.125rem; box-shadow: $shadow-card; &__header { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem; } &__footer { display: flex; align-items: center; justify-content: space-between; margin-top: 0.5rem; } }
+.project-name { font-size: 1rem; font-weight: 700; color: $text-primary; }
+.project-desc { font-size: 0.875rem; color: $text-secondary; margin: 0.25rem 0; }
+.project-address { font-size: 0.8125rem; color: $text-muted; margin: 0.25rem 0; }
+.project-date { font-size: 0.75rem; color: $text-muted; }
+
+.status-badge { font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.625rem; border-radius: 4px; &--planned { background: rgba(255,255,255,0.06); color: $text-secondary; border: 1px solid $glass-border; } &--active { background: rgba($primary, 0.12); color: $primary; border: 1px solid rgba($primary, 0.2); } &--completed { background: rgba(56, 189, 248, 0.1); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.2); } &--cancelled { background: rgba($error, 0.1); color: $error; border: 1px solid rgba($error, 0.2); } }
+
+.btn { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.45rem 1rem; border-radius: $border-radius; font-size: 0.875rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s ease; font-family: inherit; text-decoration: none; &--primary { background: $primary; color: $text-on-primary; &:hover { background: color.adjust($primary, $lightness: 5%); } } }
+.delete-btn { background: transparent; border: none; cursor: pointer; color: $text-muted; font-size: 0.8125rem; padding: 0.25rem 0.5rem; border-radius: 6px; transition: all 0.15s ease; &:hover { color: $error; background: rgba($error, 0.1); } }
+.empty-state { text-align: center; color: $text-muted; padding: 3rem 0; }

@@ -1,0 +1,40 @@
+@use 'styles/variables' as *;
+
+.dup-dialog {
+  padding: 1rem;
+  min-width: 280px;
+
+  &__title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: $text-muted;
+    margin: 0 0 0.75rem;
+  }
+
+  &__msg { font-size: 0.875rem; color: $text-muted; margin: 0; }
+
+  &__list { list-style: none; padding: 0; margin: 0; }
+
+  &__item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid $glass-border;
+    &:last-child { border-bottom: none; }
+  }
+
+  &__link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    text-decoration: none;
+    &:hover .dup-dialog__name { color: $primary; }
+  }
+
+  &__name { font-size: 0.875rem; color: $text-primary; font-weight: 600; }
+  &__city { font-size: 0.75rem; color: $text-muted; }
+  &__score { font-size: 0.75rem; color: $primary; font-weight: 600; white-space: nowrap; margin-left: 0.5rem; }
+}

@@ -1,0 +1,42 @@
+// card-vault Design Tokens — Dark Theme
+// Basis: #0f1613 (near-black) | Akzent: #4ade80 (Matter Green — professionell, nicht neon)
+
+// Akzent — NUR für Buttons, aktive Zustände, Key-Highlights
+$primary:         #4ade80;
+$primary-light:   #22c55e;
+$primary-lighter: #16a34a;
+
+// Hintergründe (neutral dunkel, kein grüner Stich)
+$bg-app:          #0f1613;   // Near-Black — minimal Grün-Ton, weniger Augenbelastung
+$bg-surface-1:    #161C19;   // Karten / erhöhte Flächen
+$bg-surface-2:    #1E2620;   // Modals, tiefere Ebenen
+$bg-sidebar:      #111811;   // Sidebar
+
+// Karte — dezentes weißes Glas, KEIN grüner Tint
+$glass-bg:        rgba(255, 255, 255, 0.04);
+$glass-border:    rgba(255, 255, 255, 0.08);
+$glass-blur:      12px;
+
+// Text-Hierarchie
+$text-on-primary: #060E07;   // Dunkler Text auf Neon-Grün-Button
+$text-primary:    #F0F4F1;   // Fast-Weiß (kein reines Weiß — weniger hart auf OLED)
+$text-secondary:  rgba(240, 244, 241, 0.70);
+$text-muted:      rgba(240, 244, 241, 0.45);
+
+// Legacy-Alias
+$bg-card:         $bg-surface-1;
+
+$success:         #4ade80;
+$warning:         #f59e0b;
+$error:           #ef4444;
+$info:            #38bdf8;
+
+$card-edge-color: $bg-surface-1;
+
+$border-radius:      0.75rem;
+$border-radius-lg:   1rem;
+$border-radius-pill: 999px;
+
+// Schatten — rein schwarz, kein grüner Schimmer auf normalen Karten
+$shadow-card:     0 2px 8px rgba(0, 0, 0, 0.3);
+$shadow-elevated: 0 6px 28px rgba(0, 0, 0, 0.55);

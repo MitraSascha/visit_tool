@@ -1,0 +1,45 @@
+@use 'styles/variables' as *;
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+// Neutrale dunkle Karte — kein grüner Tint
+@mixin card-shadow {
+  background: $glass-bg;
+  backdrop-filter: blur($glass-blur);
+  -webkit-backdrop-filter: blur($glass-blur);
+  border: 1px solid $glass-border;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-card;
+}
+
+@mixin responsive($bp) {
+  @if $bp == sm  { @media (min-width: 640px)  { @content; } }
+  @if $bp == md  { @media (min-width: 768px)  { @content; } }
+  @if $bp == lg  { @media (min-width: 1024px) { @content; } }
+  @if $bp == xl  { @media (min-width: 1280px) { @content; } }
+}
+
+@mixin truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// ── Transition-Standards ──────────────────────────────────────────────────
+// Micro  (Hover, Toggle, Icon):       120ms
+// Smooth (Component, Accordeon):      250ms
+// Slow   (Page Transition, Modal):    400ms
+
+@mixin transition-quick  { transition: all 120ms ease-out; }
+@mixin transition-smooth { transition: all 250ms ease-in-out; }
+@mixin transition-slow   { transition: all 400ms ease-in-out; }

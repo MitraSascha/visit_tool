@@ -1,0 +1,43 @@
+# Umgebung — niemals committen!
+.env
+.env.local
+.env.prod
+
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Build-Outputs
+frontend/dist/
+frontend/.angular/
+
+# Docker Volumes (lokal)
+postgres_data/
+uploads/
+
+# IDE
+.idea/
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Zugangsdaten — niemals committen!
+login.md
+
+# Claude Code interne Dateien
+.claude/
+
+# Persönliche Dateien
+*.jpeg
+*.jpg
+1.png
+
+# Python
+*.egg-info/
+.pytest_cache/

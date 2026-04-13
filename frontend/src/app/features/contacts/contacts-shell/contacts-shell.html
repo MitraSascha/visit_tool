@@ -1,0 +1,100 @@
+<div class="shell">
+
+  <!-- ── Sidebar (Desktop ≥ 640px) ─────────────────────────────────── -->
+  <nav class="sidebar">
+    <div class="sidebar__brand">
+      <span class="sidebar__icon">🗂</span>
+      <span class="sidebar__title">card-vault</span>
+    </div>
+
+    <ul class="sidebar__nav">
+      <li>
+        <a routerLink="/contacts" routerLinkActive="active"
+           [routerLinkActiveOptions]="{exact: true}" class="nav-link">
+          <span class="nav-icon">📋</span>
+          <span class="nav-label">Kontakte</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">
+          <span class="nav-icon">📊</span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/map" routerLinkActive="active" class="nav-link">
+          <span class="nav-icon">🗺</span>
+          <span class="nav-label">Karte</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/reminders" routerLinkActive="active" class="nav-link">
+          <span class="nav-icon">🔔</span>
+          <span class="nav-label">Erinnerungen</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/projects" routerLinkActive="active" class="nav-link">
+          <span class="nav-icon">🏗</span>
+          <span class="nav-label">Projekte</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/groups" routerLinkActive="active" class="nav-link">
+          <span class="nav-icon">👥</span>
+          <span class="nav-label">Gruppen</span>
+        </a>
+      </li>
+
+      <li class="nav-divider"></li>
+
+      <li>
+        <a routerLink="/capture" routerLinkActive="active" class="nav-link">
+          <span class="nav-icon">📸</span>
+          <span class="nav-label">Erfassen</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/new" routerLinkActive="active" class="nav-link">
+          <span class="nav-icon">➕</span>
+          <span class="nav-label">Neu anlegen</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="sidebar__footer">
+      <span class="user-email">{{ userEmail() }}</span>
+      <button class="logout-btn" (click)="logout()">⎋ Abmelden</button>
+    </div>
+  </nav>
+
+  <!-- ── Haupt-Content ────────────────────────────────────────────────── -->
+  <main class="shell__main">
+    <router-outlet />
+  </main>
+
+  <!-- ── Bottom-Nav (Mobile < 640px) ──────────────────────────────────── -->
+  <nav class="bottom-nav">
+    <a routerLink="/contacts" routerLinkActive="active"
+       [routerLinkActiveOptions]="{exact: true}" class="bottom-nav__item">
+      <span class="nav-icon">📋</span>
+      <span>Kontakte</span>
+    </a>
+    <a routerLink="/dashboard" routerLinkActive="active" class="bottom-nav__item">
+      <span class="nav-icon">📊</span>
+      <span>Dashboard</span>
+    </a>
+    <a routerLink="/capture" routerLinkActive="active" class="bottom-nav__item bottom-nav__item--capture">
+      <span class="capture-btn">📸</span>
+    </a>
+    <a routerLink="/reminders" routerLinkActive="active" class="bottom-nav__item">
+      <span class="nav-icon">🔔</span>
+      <span>Alerts</span>
+    </a>
+    <a routerLink="/map" routerLinkActive="active" class="bottom-nav__item">
+      <span class="nav-icon">🗺</span>
+      <span>Karte</span>
+    </a>
+  </nav>
+
+</div>

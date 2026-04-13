@@ -1,0 +1,281 @@
+<div class="capture-page">
+
+  <!-- Versteckte File-Inputs -->
+  <input #frontInput type="file" accept="image/*" class="file-input-hidden"
+         (change)="onFrontSelected($event)" />
+  <input #backInput  type="file" accept="image/*" class="file-input-hidden"
+         (change)="onBackSelected($event)" />
+
+  <!-- ── Fortschritt ────────────────────────────────────────────────── -->
+  <header class="capture-header">
+    <h1 class="capture-title">{{ stepLabel() }}</h1>
+    <div class="step-dots">
+      <span class="dot" [class.dot--active]="step() === 'front'"></span>
+      <span class="dot" [class.dot--active]="step() === 'back' || step() === 'ocr'"></span>
+      <span class="dot" [class.dot--active]="step() === 'form'"></span>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       SCHRITT 1: VORDERSEITE
+  ══════════════════════════════════════════════════════════════════ -->
+  @if (step() === 'front') {
+    <div class="photo-section">
+
+      @if (!frontPreviewUrl()) {
+        <!-- Noch kein Foto -->
+        <div class="photo-placeholder">
+          <div class="photo-placeholder__icon">📷</div>
+          <p class="photo-placeholder__text">Vorderseite der Visitenkarte aufnehmen</p>
+        </div>
+      } @else {
+        <!-- Vorschau -->
+        <div class="photo-preview">
+          <img [src]="frontPreviewUrl()" class="photo-preview__img" alt="Vorderseite" />
+        </div>
+      }
+
+      <div class="photo-actions">
+        <button class="btn btn--primary" (click)="openGallery('front')">
+          🖼 Foto auswählen
+        </button>
+        @if (frontPreviewUrl()) {
+          <button class="btn btn--primary btn--confirm" (click)="confirmFront()">
+            Weiter → Rückseite
+          </button>
+        }
+      </div>
+
+    </div>
+  }
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       SCHRITT 2: RÜCKSEITE
+  ══════════════════════════════════════════════════════════════════ -->
+  @if (step() === 'back') {
+    <div class="photo-section">
+
+      @if (!backPreviewUrl()) {
+        <div class="photo-placeholder">
+          <div class="photo-placeholder__icon">📷</div>
+          <p class="photo-placeholder__text">Rückseite der Visitenkarte aufnehmen (optional)</p>
+        </div>
+      } @else {
+        <div class="photo-preview">
+          <img [src]="backPreviewUrl()" class="photo-preview__img" alt="Rückseite" />
+        </div>
+      }
+
+      <div class="photo-actions">
+        <button class="btn btn--primary" (click)="openGallery('back')">
+          🖼 Foto auswählen
+        </button>
+        @if (backPreviewUrl()) {
+          <button class="btn btn--primary btn--confirm" (click)="confirmBack()">
+            Weiter → Daten prüfen
+          </button>
+        }
+        <button class="btn btn--ghost" (click)="skipBack()">
+          Rückseite überspringen
+        </button>
+      </div>
+
+    </div>
+  }
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       OCR-WARTE-SCHRITT
+  ══════════════════════════════════════════════════════════════════ -->
+  @if (step() === 'ocr') {
+    <div class="ocr-waiting">
+      <div class="ocr-spinner"></div>
+      <p>Texte werden aus der Visitenkarte gelesen…</p>
+    </div>
+  }
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       SCHRITT 3: 3D-VORSCHAU + FORMULAR
+  ══════════════════════════════════════════════════════════════════ -->
+  @if (step() === 'form') {
+    <div class="form-section">
+
+      @if (ocrWarning()) {
+        <div class="alert alert--warn">
+          ⚠️ Texterkennung fehlgeschlagen — bitte Felder manuell ausfüllen.
+        </div>
+      }
+      @if (saveError()) {
+        <div class="alert alert--error">{{ saveError() }}</div>
+      }
+
+      <!-- 3D Karten-Vorschau -->
+      <div class="preview-3d">
+        <app-card-viewer
+          [frontImageUrl]="frontPreviewUrl()"
+          [backImageUrl]="backPreviewUrl()"
+        />
+        <div class="preview-3d__actions">
+          <button class="btn btn--ghost btn--sm" (click)="retake('front')">
+            📷 Vorderseite neu
+          </button>
+          <button class="btn btn--ghost btn--sm" (click)="retake('back')">
+            📷 Rückseite neu
+          </button>
+        </div>
+      </div>
+
+      <!-- Formular -->
+      <form [formGroup]="form" (ngSubmit)="save()" class="contact-form">
+
+        <!-- STAMMDATEN -->
+        <section class="form-section-group">
+          <h3 class="form-section-title">Stammdaten</h3>
+          <div class="form-grid">
+            <div class="field field--full">
+              <label class="field__label">Firma *</label>
+              <input class="field__input" formControlName="company_name"
+                     [class.field__input--error]="form.controls.company_name.invalid && form.controls.company_name.touched"
+                     placeholder="Firmenname" />
+            </div>
+            <div class="field">
+              <label class="field__label">Ansprechpartner</label>
+              <input class="field__input" formControlName="contact_name" placeholder="Name" />
+            </div>
+            <div class="field">
+              <label class="field__label">Position</label>
+              <input class="field__input" formControlName="job_title" placeholder="GF, Vertrieb…" />
+            </div>
+            <div class="field">
+              <label class="field__label">Telefon</label>
+              <input class="field__input" type="tel" formControlName="phone" placeholder="+49…" />
+            </div>
+            <div class="field">
+              <label class="field__label">Mobil</label>
+              <input class="field__input" type="tel" formControlName="mobile" placeholder="+49…" />
+            </div>
+            <div class="field field--full">
+              <label class="field__label">E-Mail</label>
+              <input class="field__input" type="email" formControlName="email" />
+            </div>
+            <div class="field field--full">
+              <label class="field__label">Website</label>
+              <input class="field__input" formControlName="website" placeholder="www.firma.de" />
+            </div>
+            <div class="field field--full">
+              <label class="field__label">Straße</label>
+              <input class="field__input" formControlName="street" />
+            </div>
+            <div class="field">
+              <label class="field__label">PLZ</label>
+              <input class="field__input" formControlName="zip_code" />
+            </div>
+            <div class="field">
+              <label class="field__label">Stadt</label>
+              <input class="field__input" formControlName="city" />
+            </div>
+          </div>
+        </section>
+
+        <!-- EINORDNUNG -->
+        <section class="form-section-group">
+          <h3 class="form-section-title">Einordnung</h3>
+          <div class="form-grid">
+            <div class="field">
+              <label class="field__label">Kategorie</label>
+              <select class="field__input" formControlName="category">
+                <option value="">— wählen —</option>
+                @for (cat of categories; track cat) {
+                  <option [value]="cat">{{ cat }}</option>
+                }
+              </select>
+            </div>
+            <div class="field">
+              <label class="field__label">Gewerk</label>
+              <input class="field__input" formControlName="trade" placeholder="z.B. Bodenfliesen" />
+            </div>
+            <div class="field field--full">
+              <label class="field__label">Einsatzgebiet</label>
+              <input class="field__input" formControlName="service_area" placeholder="z.B. Berlin, Potsdam" />
+            </div>
+            <div class="field field--full">
+              <label class="field__label">Tags <span class="field__hint">(kommagetrennt)</span></label>
+              <input class="field__input" formControlName="tags" placeholder="zuverlässig, Wasserschäden, BNI" />
+            </div>
+            <div class="field field--full">
+              <label class="field__label">Beschreibung</label>
+              <textarea class="field__input field__input--textarea" formControlName="service_description"
+                        rows="2" placeholder="Wofür ist dieser Kontakt gut?"></textarea>
+            </div>
+          </div>
+        </section>
+
+        <!-- PRAXISNUTZEN -->
+        <section class="form-section-group">
+          <h3 class="form-section-title">Praxisnutzen</h3>
+          <div class="form-grid">
+            <div class="field">
+              <label class="field__label">Zusammenarbeit</label>
+              <select class="field__input" formControlName="has_worked_with_us">
+                @for (opt of workedOptions; track opt.value) {
+                  <option [value]="opt.value">{{ opt.label }}</option>
+                }
+              </select>
+            </div>
+            <div class="field">
+              <label class="field__label">Priorität</label>
+              <select class="field__input" formControlName="priority">
+                @for (p of priorities; track p.value) {
+                  <option [value]="p.value">{{ p.label }}</option>
+                }
+              </select>
+            </div>
+            <div class="field field--full">
+              <label class="field__label">Bewertung</label>
+              <app-star-rating
+                [rating]="form.controls.internal_rating.value"
+                (ratingChange)="setRating($event)"
+              />
+            </div>
+            <div class="field">
+              <label class="field__label">Reaktionszeit</label>
+              <select class="field__input" formControlName="response_speed">
+                <option value="">—</option>
+                @for (r of responseSpeeds; track r.value) {
+                  <option [value]="r.value">{{ r.label }}</option>
+                }
+              </select>
+            </div>
+            <div class="field">
+              <label class="field__label">Empfohlen von</label>
+              <input class="field__input" formControlName="recommended_by" />
+            </div>
+            <div class="field">
+              <label class="field__label">Bekannt bei</label>
+              <input class="field__input" formControlName="known_by" placeholder="Sabine, Klaus…" />
+            </div>
+          </div>
+        </section>
+
+        <!-- NOTIZEN -->
+        <section class="form-section-group">
+          <h3 class="form-section-title">Notizen</h3>
+          <textarea class="field__input field__input--textarea" formControlName="note"
+                    rows="3" placeholder="Interne Notizen, Besonderheiten…"></textarea>
+        </section>
+
+        <!-- SPEICHERN -->
+        <div class="form-submit">
+          <button type="submit" class="btn btn--primary" [disabled]="form.invalid || saving()">
+            @if (saving()) {
+              <span class="btn-spinner"></span> Speichern…
+            } @else {
+              ✓ Kontakt speichern
+            }
+          </button>
+        </div>
+
+      </form>
+    </div>
+  }
+
+</div>

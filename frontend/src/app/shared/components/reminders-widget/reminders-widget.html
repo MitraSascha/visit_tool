@@ -1,0 +1,13 @@
+<div class="widget">
+  <h3 class="widget-title">Nächste Erinnerungen</h3>
+  @for (r of reminders(); track r.id) {
+    <div class="widget-item" [class.widget-item--overdue]="isOverdue(r)">
+      <span class="widget-date">{{ formatDate(r.due_date) }}</span>
+      @if (r.note) { <span class="widget-note">{{ r.note }}</span> }
+    </div>
+  }
+  @if (reminders().length === 0) {
+    <p class="widget-empty">Keine anstehenden Erinnerungen</p>
+  }
+  <a routerLink="/reminders" class="widget-link">Alle anzeigen →</a>
+</div>

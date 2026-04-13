@@ -1,0 +1,20 @@
+<div class="dup-dialog">
+  <h4 class="dup-dialog__title">Mögliche Duplikate</h4>
+  @if (loading()) {
+    <p class="dup-dialog__msg">Suche läuft…</p>
+  } @else if (duplicates().length === 0) {
+    <p class="dup-dialog__msg">Keine ähnlichen Kontakte gefunden.</p>
+  } @else {
+    <ul class="dup-dialog__list">
+      @for (d of duplicates(); track d.id) {
+        <li class="dup-dialog__item">
+          <a [routerLink]="['/contacts', d.id]" class="dup-dialog__link">
+            <span class="dup-dialog__name">{{ d.company_name }}</span>
+            <span class="dup-dialog__city">{{ d.city }}</span>
+          </a>
+          <span class="dup-dialog__score">{{ similarityPercent(d.similarity_score) }} ähnlich</span>
+        </li>
+      }
+    </ul>
+  }
+</div>

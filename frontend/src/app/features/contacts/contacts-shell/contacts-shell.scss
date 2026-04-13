@@ -1,0 +1,212 @@
+@use 'styles/variables' as *;
+@use 'styles/mixins' as *;
+
+.shell {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  overflow: hidden;
+  background: $bg-app;
+
+  @include responsive(sm) { flex-direction: row; }
+}
+
+// ── Sidebar (Desktop) ──────────────────────────────────────────────────────
+
+.sidebar {
+  display: none;
+
+  @include responsive(sm) {
+    display: flex;
+    flex-direction: column;
+    width: 220px;
+    flex-shrink: 0;
+    background: $bg-sidebar;
+    border-right: 1px solid $glass-border;
+    overflow: hidden;
+  }
+
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 1.375rem 1rem;
+    border-bottom: 1px solid $glass-border;
+  }
+
+  &__icon { font-size: 1.375rem; }
+
+  &__title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: $text-primary;
+    letter-spacing: -0.01em;
+  }
+
+  &__nav {
+    list-style: none;
+    margin: 0.75rem 0 0;
+    padding: 0 0.625rem;
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  &__footer {
+    padding: 1rem 0.75rem;
+    border-top: 1px solid $glass-border;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.625rem 0.875rem;
+  border-radius: $border-radius;
+  color: $text-secondary;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  @include transition-quick;
+  margin-bottom: 2px;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: $text-primary;
+  }
+
+  &.active {
+    background: rgba(74, 222, 128, 0.10);
+    color: $primary;
+    border: 1px solid rgba(74, 222, 128, 0.18);
+    font-weight: 600;
+  }
+
+  .nav-icon { font-size: 1rem; flex-shrink: 0; }
+}
+
+.nav-divider {
+  height: 1px;
+  background: $glass-border;
+  margin: 0.5rem 0.875rem;
+}
+
+.user-email {
+  font-size: 0.72rem;
+  color: $text-muted;
+  @include truncate;
+}
+
+.logout-btn {
+  background: none;
+  border: 1px solid $glass-border;
+  color: $text-secondary;
+  border-radius: $border-radius;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.78rem;
+  cursor: pointer;
+  @include transition-quick;
+  text-align: left;
+  font-family: inherit;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: $text-primary;
+  }
+}
+
+// ── Main ───────────────────────────────────────────────────────────────────
+
+.shell__main {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: $bg-app;
+  min-height: 0;
+  padding-bottom: 5rem;
+
+  @include responsive(sm) { padding-bottom: 0; }
+}
+
+// ── Bottom-Nav — schwebende Pille ──────────────────────────────────────────
+
+.bottom-nav {
+  position: fixed;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  height: 58px;
+  background: rgba(22, 28, 25, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 29px;
+  display: flex;
+  align-items: center;
+  z-index: 100;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+
+  @include responsive(sm) { display: none; }
+}
+
+.bottom-nav__item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  text-decoration: none;
+  color: $text-muted;
+  font-size: 0.62rem;
+  font-weight: 500;
+  @include transition-quick;
+  padding: 0.5rem 0;
+  border-radius: 22px;
+  margin: 4px;
+  opacity: 0.4;
+
+  .nav-icon {
+    font-size: 1.2rem;
+    line-height: 1;
+    @include transition-quick;
+  }
+
+  // Aktiver Tab: Scale statt Glow — kein Neon-Drop-Shadow
+  &.active {
+    color: $primary;
+    opacity: 1;
+
+    .nav-icon {
+      transform: scale(1.15);
+    }
+  }
+
+  &:active { transform: scale(0.9); }
+
+  // Zentraler Erfassen-Button — hervorgehoben
+  &--capture {
+    opacity: 1;
+    .capture-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: $primary;
+      font-size: 1.25rem;
+      margin-bottom: 0;
+      box-shadow: 0 4px 16px rgba(74, 222, 128, 0.4);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    &:active .capture-btn {
+      transform: scale(0.92);
+      box-shadow: 0 2px 8px rgba(74, 222, 128, 0.3);
+    }
+    span:last-child { display: none; }
+  }
+}

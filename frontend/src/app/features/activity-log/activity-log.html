@@ -1,0 +1,32 @@
+<div class="actlog-page">
+  <header class="page-header">
+    <h1>Aktivitäts-Log</h1>
+    <p class="subtitle">Alle Systemaktivitäten</p>
+  </header>
+
+  <div class="log-table-wrapper">
+    <table class="log-table">
+      <thead>
+        <tr>
+          <th>Zeit</th>
+          <th>Aktion</th>
+          <th>Typ</th>
+          <th>Detail</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (log of logs(); track log.id) {
+          <tr>
+            <td class="log-time">{{ formatDate(log.created_at) }}</td>
+            <td><span class="action-badge">{{ log.action }}</span></td>
+            <td class="log-entity">{{ entityLabel(log.entity_type) }}</td>
+            <td class="log-detail">{{ log.detail || '–' }}</td>
+          </tr>
+        }
+        @if (logs().length === 0) {
+          <tr><td colspan="4" class="empty-cell">Keine Einträge vorhanden.</td></tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

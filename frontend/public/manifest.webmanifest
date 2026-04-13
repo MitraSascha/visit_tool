@@ -1,0 +1,37 @@
+{
+  "name": "card-vault",
+  "short_name": "card-vault",
+  "description": "Digitales Visitenkarten- und Partnerverzeichnis für Handwerksbetriebe",
+  "lang": "de",
+  "theme_color": "#0f1613",
+  "background_color": "#0f1613",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "scope": "./",
+  "start_url": "./",
+  "categories": ["business", "productivity"],
+  "icons": [
+    { "src": "icons/icon-72x72.png", "sizes": "72x72", "type": "image/png", "purpose": "maskable any" },
+    { "src": "icons/icon-96x96.png", "sizes": "96x96", "type": "image/png", "purpose": "maskable any" },
+    { "src": "icons/icon-128x128.png", "sizes": "128x128", "type": "image/png", "purpose": "maskable any" },
+    { "src": "icons/icon-144x144.png", "sizes": "144x144", "type": "image/png", "purpose": "maskable any" },
+    { "src": "icons/icon-152x152.png", "sizes": "152x152", "type": "image/png", "purpose": "maskable any" },
+    { "src": "icons/icon-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable any" },
+    { "src": "icons/icon-384x384.png", "sizes": "384x384", "type": "image/png", "purpose": "maskable any" },
+    { "src": "icons/icon-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable any" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Neuer Kontakt",
+      "short_name": "Neu",
+      "url": "/capture",
+      "icons": [{ "src": "icons/icon-96x96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Kontakte",
+      "short_name": "Kontakte",
+      "url": "/contacts",
+      "icons": [{ "src": "icons/icon-96x96.png", "sizes": "96x96" }]
+    }
+  ]
+}

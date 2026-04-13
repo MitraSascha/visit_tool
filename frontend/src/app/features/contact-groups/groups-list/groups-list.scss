@@ -1,0 +1,17 @@
+@use 'styles/variables' as *;
+@use 'styles/mixins' as *;
+@use 'sass:color';
+
+.groups-page { padding: 0 0.875rem 3rem; max-width: 720px; margin: 0 auto; @include responsive(sm) { padding: 0 1.5rem 3rem; } }
+.page-header { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 0 1rem; flex-wrap: wrap; gap: 0.75rem; h1 { font-size: 1.5rem; font-weight: 700; color: $text-primary; margin: 0; } }
+.add-form { background: $bg-surface-1; border: 1px solid $glass-border; border-radius: $border-radius-lg; padding: 1.25rem; margin-bottom: 1.25rem; display: flex; flex-direction: column; gap: 0.875rem; }
+.form-row { display: flex; flex-direction: column; gap: 0.25rem; label { font-size: 0.8125rem; font-weight: 600; color: $text-muted; text-transform: uppercase; letter-spacing: 0.06em; } input, textarea { background: $bg-surface-2; border: 1px solid $glass-border; border-radius: $border-radius; color: $text-primary; font-size: 0.9375rem; padding: 0.5rem 0.75rem; font-family: inherit; outline: none; width: 100%; &:focus { border-color: rgba($primary, 0.4); } } textarea { resize: vertical; } &--inline { flex-direction: row; align-items: center; gap: 0.75rem; input[type=color] { width: 3rem; height: 2.5rem; padding: 0.25rem; cursor: pointer; } } }
+.groups-list { display: flex; flex-direction: column; gap: 0.5rem; }
+.group-card { display: flex; align-items: center; gap: 0.875rem; background: $bg-surface-1; border: 1px solid $glass-border; border-radius: $border-radius-lg; padding: 0.875rem 1rem; }
+.group-color-dot { width: 1rem; height: 1rem; border-radius: 50%; flex-shrink: 0; background: $glass-border; }
+.group-info { flex: 1; display: flex; flex-direction: column; gap: 0.125rem; }
+.group-name { font-size: 0.9375rem; font-weight: 600; color: $text-primary; }
+.group-desc { font-size: 0.8125rem; color: $text-muted; }
+.btn { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.45rem 1rem; border-radius: $border-radius; font-size: 0.875rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s ease; font-family: inherit; &--primary { background: $primary; color: $text-on-primary; &:hover { background: color.adjust($primary, $lightness: 5%); } } }
+.delete-btn { background: transparent; border: none; cursor: pointer; color: $text-muted; font-size: 0.875rem; padding: 0.25rem 0.5rem; border-radius: 6px; transition: all 0.15s ease; &:hover { color: $error; background: rgba($error, 0.1); } }
+.empty-state { text-align: center; color: $text-muted; padding: 3rem 0; }

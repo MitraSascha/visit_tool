@@ -1,0 +1,19 @@
+@use 'styles/variables' as *;
+@use 'styles/mixins' as *;
+@use 'sass:color';
+
+.eval-page { padding: 0 0.875rem 3rem; max-width: 600px; margin: 0 auto; @include responsive(sm) { padding: 0 1.5rem 3rem; } }
+.eval-header { padding: 1rem 0 1.5rem; }
+.back-link { font-size: 0.875rem; color: $text-muted; text-decoration: none; &:hover { color: $text-primary; } }
+.eval-header h1 { font-size: 1.5rem; font-weight: 700; color: $text-primary; margin: 0.5rem 0 0; }
+.eval-subtitle { font-size: 0.875rem; color: $text-muted; margin: 0.25rem 0 0; }
+.eval-form { background: $bg-surface-1; border: 1px solid $glass-border; border-radius: $border-radius-lg; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; }
+.criterion-row { display: flex; flex-direction: column; gap: 0.375rem; @include responsive(sm) { flex-direction: row; align-items: center; justify-content: space-between; } }
+.criterion-label { font-size: 0.9375rem; font-weight: 600; color: $text-primary; min-width: 140px; }
+.stars { display: flex; align-items: center; gap: 0.25rem; }
+.star-btn { background: transparent; border: none; cursor: pointer; font-size: 1.5rem; color: rgba(255,255,255,0.15); transition: color 0.1s ease; padding: 0; line-height: 1; &--filled { color: $warning; } &:hover { color: $primary; } }
+.star-value { font-size: 0.8125rem; color: $text-muted; margin-left: 0.375rem; }
+.form-row { display: flex; flex-direction: column; gap: 0.25rem; label { font-size: 0.8125rem; font-weight: 600; color: $text-muted; text-transform: uppercase; letter-spacing: 0.06em; } textarea { background: $bg-surface-2; border: 1px solid $glass-border; border-radius: $border-radius; color: $text-primary; font-size: 0.9375rem; padding: 0.5rem 0.75rem; font-family: inherit; outline: none; width: 100%; resize: vertical; &:focus { border-color: rgba($primary, 0.4); } } }
+.error-msg { color: $error; font-size: 0.875rem; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem; padding: 0.6rem 1.25rem; border-radius: $border-radius; font-size: 0.9375rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s ease; font-family: inherit; text-decoration: none; &--primary { background: $primary; color: $text-on-primary; &:hover { background: color.adjust($primary, $lightness: 5%); } } &--full { width: 100%; } }
+.success-card { background: $bg-surface-1; border: 1px solid rgba($primary, 0.25); border-radius: $border-radius-lg; padding: 3rem 1.5rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1rem; .success-icon { font-size: 3rem; color: $primary; } p { font-size: 1.125rem; color: $text-primary; margin: 0; } }

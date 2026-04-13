@@ -1,0 +1,241 @@
+@if (loading()) {
+  <div class="detail-loading">
+    <div class="loading-spinner"></div>
+  </div>
+}
+
+@if (contact(); as c) {
+  <div class="detail-page">
+
+    <!-- ── HEADER ──────────────────────────────────────────────────── -->
+    <header class="detail-header">
+      <a routerLink="/contacts" class="back-btn">
+        <span class="back-icon">←</span>
+        Zurück
+      </a>
+      <div class="header-actions">
+        @if (deleteConfirm()) {
+          <span class="delete-confirm-label">Wirklich löschen?</span>
+          <button class="btn btn--danger" [disabled]="deleting()" (click)="delete()">
+            @if (deleting()) { Wird gelöscht… } @else { Ja, löschen }
+          </button>
+          <button class="btn btn--ghost" [disabled]="deleting()" (click)="deleteConfirm.set(false)">
+            Abbrechen
+          </button>
+        } @else {
+          <a [routerLink]="['/contacts', c.id, 'edit']" class="btn btn--secondary">
+            Bearbeiten
+          </a>
+          <button class="btn btn--delete" (click)="deleteConfirm.set(true)" title="Kontakt löschen">
+            🗑
+          </button>
+          @if (contact(); as c) {
+            <button class="btn btn--ghost" (click)="shareContact()" title="Kontakt teilen">
+              ↗ Teilen
+            </button>
+            <button class="btn btn--ghost" (click)="printContact()" title="Drucken">
+              🖨 Drucken
+            </button>
+            <button class="btn btn--ghost" (click)="showQr.update(v => !v)" title="QR / vCard">
+              📱 QR
+            </button>
+            <button class="btn btn--ghost" (click)="showDuplicates.update(v => !v)" title="Duplikate prüfen">
+              🔍 Duplikate
+            </button>
+          }
+        }
+      </div>
+    </header>
+
+    <!-- ── 3D KARTEN-VIEWER ────────────────────────────────────────── -->
+    <section class="viewer-section">
+      <app-card-viewer
+        [frontImageUrl]="frontImageUrl()"
+        [backImageUrl]="backImageUrl()"
+      />
+    </section>
+
+    <!-- ── QR / VCARD & DUPLIKATE ───────────────────────────────────── -->
+    @if (showQr() && contact(); as c) {
+      <div class="action-panel">
+        <app-qr-vcard [contact]="c" />
+      </div>
+    }
+    @if (showDuplicates() && contact(); as c) {
+      <div class="action-panel">
+        <app-duplicate-dialog [contactId]="c.id" />
+      </div>
+    }
+
+    <!-- ── INFO-SEKTIONEN ─────────────────────────────────────────── -->
+    <div class="info-sections">
+
+      <!-- STAMMDATEN -->
+      <section class="info-card">
+        <div class="info-card__header">
+          <h2 class="info-card__title">{{ c.company_name }}</h2>
+          <span class="category-badge">{{ c.category }}</span>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-field">
+            <span class="info-label">Ansprechpartner</span>
+            <span class="info-value">{{ c.contact_name || '—' }}</span>
+          </div>
+          <div class="info-field">
+            <span class="info-label">Position</span>
+            <span class="info-value">{{ c.job_title || '—' }}</span>
+          </div>
+
+          @if (c.phone) {
+            <div class="info-field">
+              <span class="info-label">Telefon</span>
+              <a [href]="'tel:' + c.phone" class="info-value info-value--link">{{ c.phone }}</a>
+            </div>
+          }
+          @if (c.mobile) {
+            <div class="info-field">
+              <span class="info-label">Mobil</span>
+              <a [href]="'tel:' + c.mobile" class="info-value info-value--link">{{ c.mobile }}</a>
+            </div>
+          }
+          @if (c.email) {
+            <div class="info-field info-field--full">
+              <span class="info-label">E-Mail</span>
+              <a [href]="'mailto:' + c.email" class="info-value info-value--link">{{ c.email }}</a>
+            </div>
+          }
+          @if (c.website) {
+            <div class="info-field info-field--full">
+              <span class="info-label">Website</span>
+              <a [href]="'https://' + c.website" target="_blank" rel="noopener"
+                 class="info-value info-value--link">{{ c.website }}</a>
+            </div>
+          }
+          @if (c.street || c.city) {
+            <div class="info-field info-field--full">
+              <span class="info-label">Adresse</span>
+              <span class="info-value">
+                {{ c.street }}<br>{{ c.zip_code }} {{ c.city }}
+              </span>
+            </div>
+          }
+        </div>
+      </section>
+
+      <!-- EINORDNUNG -->
+      <section class="info-card">
+        <h3 class="info-card__section-title">Einordnung</h3>
+        <div class="info-grid">
+          <div class="info-field">
+            <span class="info-label">Gewerk</span>
+            <span class="info-value">{{ c.trade || '—' }}</span>
+          </div>
+          <div class="info-field">
+            <span class="info-label">Einsatzgebiet</span>
+            <span class="info-value">{{ c.service_area || '—' }}</span>
+          </div>
+          @if (c.tags.length) {
+            <div class="info-field info-field--full">
+              <span class="info-label">Tags</span>
+              <div class="tags-list">
+                @for (tag of c.tags; track tag) {
+                  <span class="tag">{{ tag }}</span>
+                }
+              </div>
+            </div>
+          }
+          @if (c.service_description) {
+            <div class="info-field info-field--full">
+              <span class="info-label">Beschreibung</span>
+              <p class="info-value info-value--text">{{ c.service_description }}</p>
+            </div>
+          }
+        </div>
+      </section>
+
+      <!-- PRAXISNUTZEN -->
+      <section class="info-card">
+        <h3 class="info-card__section-title">Praxisnutzen</h3>
+        <div class="info-grid">
+          <div class="info-field">
+            <span class="info-label">Zusammenarbeit</span>
+            <span class="info-value"
+              [class.value--yes]="c.has_worked_with_us === 'yes'"
+              [class.value--no]="c.has_worked_with_us === 'no'">
+              {{ workedWithLabel() }}
+            </span>
+          </div>
+          <div class="info-field">
+            <span class="info-label">Bewertung</span>
+            <app-star-rating [rating]="c.internal_rating ?? 0" [readonly]="true" />
+          </div>
+          <div class="info-field">
+            <span class="info-label">Reaktionszeit</span>
+            <span class="info-value">{{ responseSpeedLabel() }}</span>
+          </div>
+          <div class="info-field">
+            <span class="info-label">Priorität</span>
+            <span class="info-value priority-badge priority-badge--{{ c.priority }}">
+              {{ priorityLabel() }}
+            </span>
+          </div>
+          @if (c.last_project) {
+            <div class="info-field info-field--full">
+              <span class="info-label">Letztes Projekt</span>
+              <span class="info-value">{{ c.last_project }}</span>
+            </div>
+          }
+          @if (c.recommended_by) {
+            <div class="info-field">
+              <span class="info-label">Empfohlen von</span>
+              <span class="info-value">{{ c.recommended_by }}</span>
+            </div>
+          }
+          @if (c.known_by) {
+            <div class="info-field">
+              <span class="info-label">Bekannt bei</span>
+              <span class="info-value">{{ c.known_by }}</span>
+            </div>
+          }
+        </div>
+      </section>
+
+      <!-- NOTIZEN -->
+      @if (c.note) {
+        <section class="info-card">
+          <h3 class="info-card__section-title">Notizen</h3>
+          <p class="notes-text">{{ c.note }}</p>
+        </section>
+      }
+
+      <!-- ANHÄNGE -->
+      @if (documents().length) {
+        <section class="info-card">
+          <h3 class="info-card__section-title">Anhänge</h3>
+          <div class="attachments-list">
+            @for (doc of documents(); track doc.id) {
+              <a [href]="assetApi.resolveUrl(doc.file_path)" target="_blank" class="attachment-item">
+                <span class="attachment-icon">📎</span>
+                <span class="attachment-name">Dokument {{ doc.id }}</span>
+              </a>
+            }
+          </div>
+        </section>
+      }
+
+      <!-- KONTAKTHISTORIE -->
+      <section class="info-card">
+        <h3 class="info-card__section-title">Kontakthistorie</h3>
+        <app-timeline [contactId]="c.id" />
+      </section>
+
+      <!-- META -->
+      <footer class="detail-meta">
+        <span>Erstellt: {{ c.created_at | date:'dd.MM.yyyy' }}</span>
+        <span>Geändert: {{ c.updated_at | date:'dd.MM.yyyy' }}</span>
+      </footer>
+
+    </div>
+  </div>
+}

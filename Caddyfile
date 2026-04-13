@@ -1,0 +1,25 @@
+# card-vault — Caddy Reverse Proxy
+# Caddy holt das Let's Encrypt Zertifikat vollautomatisch.
+# Einzige Voraussetzung: DOMAIN zeigt per DNS A-Record auf diese Server-IP.
+
+{$DOMAIN} {
+    # HTTPS → interner Frontend-Container (nginx, Port 80)
+    reverse_proxy frontend:80
+
+    # Sicherheits-Header
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options    "nosniff"
+        X-Frame-Options           "SAMEORIGIN"
+        Referrer-Policy           "strict-origin-when-cross-origin"
+        -Server
+    }
+
+    # Logs
+    log {
+        output file /var/log/caddy/access.log {
+            roll_size 10mb
+            roll_keep 5
+        }
+    }
+}

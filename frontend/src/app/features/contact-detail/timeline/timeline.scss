@@ -1,0 +1,134 @@
+@use 'styles/variables' as *;
+@use 'styles/mixins' as *;
+
+.timeline {
+  &__header {
+    @include flex-between;
+    margin-bottom: 0.75rem;
+  }
+
+  &__title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: $text-muted;
+    margin: 0;
+  }
+
+  &__add-btn {
+    background: none;
+    border: 1px solid $glass-border;
+    color: $text-secondary;
+    border-radius: $border-radius;
+    padding: 0.3rem 0.75rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+    font-family: inherit;
+    @include transition-quick;
+    &:hover { background: rgba(255,255,255,0.06); color: $text-primary; }
+  }
+
+  &__form {
+    background: $bg-surface-2;
+    border: 1px solid $glass-border;
+    border-radius: $border-radius;
+    padding: 0.875rem;
+    margin-bottom: 1rem;
+
+    .form-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-select, .form-input {
+      flex: 1;
+      background: $bg-surface-1;
+      border: 1px solid $glass-border;
+      border-radius: 0.5rem;
+      color: $text-primary;
+      padding: 0.4rem 0.6rem;
+      font-size: 0.85rem;
+      font-family: inherit;
+      &:focus { outline: 1px solid $primary; }
+    }
+
+    .form-textarea {
+      width: 100%;
+      background: $bg-surface-1;
+      border: 1px solid $glass-border;
+      border-radius: 0.5rem;
+      color: $text-primary;
+      padding: 0.4rem 0.6rem;
+      font-size: 0.85rem;
+      font-family: inherit;
+      resize: vertical;
+      margin-bottom: 0.5rem;
+      box-sizing: border-box;
+      &:focus { outline: 1px solid $primary; }
+    }
+
+    .btn-save {
+      background: $primary;
+      color: $text-on-primary;
+      border: none;
+      border-radius: $border-radius;
+      padding: 0.4rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      &:disabled { opacity: 0.5; cursor: not-allowed; }
+    }
+  }
+
+  &__list { list-style: none; padding: 0; margin: 0; }
+
+  &__item {
+    position: relative;
+    padding: 0.625rem 2rem 0.625rem 0;
+    border-bottom: 1px solid $glass-border;
+    &:last-child { border-bottom: none; }
+  }
+
+  &__type {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: $primary;
+    margin-right: 0.5rem;
+  }
+
+  &__date {
+    font-size: 0.75rem;
+    color: $text-muted;
+  }
+
+  &__note {
+    margin: 0.25rem 0 0;
+    font-size: 0.875rem;
+    color: $text-secondary;
+    line-height: 1.5;
+  }
+
+  &__delete {
+    position: absolute;
+    top: 0.5rem;
+    right: 0;
+    background: none;
+    border: none;
+    color: $text-muted;
+    cursor: pointer;
+    font-size: 0.75rem;
+    padding: 0.25rem;
+    @include transition-quick;
+    &:hover { color: #ef4444; }
+  }
+
+  &__empty, &__loading {
+    font-size: 0.875rem;
+    color: $text-muted;
+    padding: 0.5rem 0;
+  }
+}

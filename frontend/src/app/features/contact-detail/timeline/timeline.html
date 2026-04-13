@@ -1,0 +1,46 @@
+<section class="timeline">
+  <div class="timeline__header">
+    <h3 class="timeline__title">Kontakthistorie</h3>
+    <button class="timeline__add-btn" type="button" (click)="showForm.update(v => !v)">
+      @if (showForm()) { Abbrechen } @else { + Eintrag }
+    </button>
+  </div>
+
+  @if (showForm()) {
+    <form class="timeline__form" [formGroup]="form" (ngSubmit)="submit()">
+      <div class="form-row">
+        <select formControlName="type" class="form-select">
+          @for (t of typeOptions; track t) {
+            <option [value]="t">{{ typeLabels[t] }}</option>
+          }
+        </select>
+        <input type="datetime-local" formControlName="date" class="form-input" />
+      </div>
+      <textarea formControlName="note" class="form-textarea" placeholder="Notiz (optional)" rows="2"></textarea>
+      <button type="submit" class="btn-save" [disabled]="form.invalid || saving()">
+        @if (saving()) { Speichern… } @else { Speichern }
+      </button>
+    </form>
+  }
+
+  @if (loading()) {
+    <div class="timeline__loading">Lädt…</div>
+  }
+
+  @if (!loading() && interactions().length === 0) {
+    <p class="timeline__empty">Noch keine Einträge.</p>
+  }
+
+  <ul class="timeline__list">
+    @for (item of interactions(); track item.id) {
+      <li class="timeline__item">
+        <span class="timeline__type">{{ typeLabels[item.type] }}</span>
+        <span class="timeline__date">{{ item.date | date:'dd.MM.yyyy HH:mm' }}</span>
+        @if (item.note) {
+          <p class="timeline__note">{{ item.note }}</p>
+        }
+        <button class="timeline__delete" type="button" (click)="remove(item.id)" title="Löschen">✕</button>
+      </li>
+    }
+  </ul>
+</section>

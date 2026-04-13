@@ -1,0 +1,37 @@
+<div class="map-page">
+  <header class="map-header">
+    <h1 class="map-title">🗺 Kontakte auf Karte</h1>
+    <div class="map-stats">
+      <span class="map-stat">{{ withCoords().length }} mit Koordinaten</span>
+      @if (withoutCoords().length > 0) {
+        <span class="map-stat map-stat--warn">{{ withoutCoords().length }} ohne Koordinaten</span>
+      }
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="map-loading">Karte wird geladen…</div>
+  }
+
+  @if (error()) {
+    <div class="map-error">{{ error() }}</div>
+  }
+
+  <div #mapContainer class="map-container"></div>
+
+  @if (withoutCoords().length > 0) {
+    <section class="map-missing">
+      <h3 class="map-missing__title">Kontakte ohne Koordinaten</h3>
+      <p class="map-missing__hint">Klicke "Geocodieren" um die Adresse über OpenStreetMap zu suchen.</p>
+      <ul class="map-missing__list">
+        @for (c of withoutCoords(); track c.id) {
+          <li class="map-missing__item">
+            <span class="map-missing__name">{{ c.company_name }}</span>
+            <span class="map-missing__city">{{ c.city }}</span>
+            <button class="map-missing__btn" (click)="geocodeContact(c.id)" type="button">Geocodieren</button>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+</div>

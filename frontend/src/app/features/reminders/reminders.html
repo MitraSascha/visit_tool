@@ -1,0 +1,136 @@
+<div class="reminders-page">
+  <header class="page-header">
+    <div>
+      <h1>Erinnerungen</h1>
+      <p class="page-subtitle">Termine und Wiedervorlagen im Blick</p>
+    </div>
+    <button class="btn btn--primary" (click)="toggleForm()">
+      {{ showForm() ? '✕ Abbrechen' : '+ Neue Erinnerung' }}
+    </button>
+  </header>
+
+  @if (showForm()) {
+    <form class="add-form" (ngSubmit)="submitForm()">
+      <!-- Kontakt-Suche -->
+      <div class="form-row">
+        <label>Kontakt *</label>
+        <div class="contact-search-wrapper">
+          <div class="contact-search-input-row">
+            <input
+              type="text"
+              class="contact-search-input"
+              placeholder="Name oder Firma suchen…"
+              [value]="contactSearch()"
+              (input)="onContactInput($any($event.target).value)"
+              (focus)="showDropdown.set(contactSearch().length > 0)"
+              autocomplete="off"
+              required
+            />
+            @if (selectedContact()) {
+              <button type="button" class="clear-btn" (click)="clearContact()">✕</button>
+            }
+          </div>
+
+          @if (selectedContact()) {
+            <div class="selected-contact-chip">
+              <span class="chip-name">{{ selectedContact()!.company_name || selectedContact()!.contact_name }}</span>
+              @if (selectedContact()!.city) {
+                <span class="chip-city">{{ selectedContact()!.city }}</span>
+              }
+            </div>
+          }
+
+          @if (showDropdown() && filteredContacts().length > 0) {
+            <ul class="contact-dropdown">
+              @for (c of filteredContacts(); track c.id) {
+                <li class="contact-dropdown__item" (click)="selectContact(c)" (mousedown)="$event.preventDefault()">
+                  <span class="dropdown-name">{{ c.company_name || c.contact_name || '–' }}</span>
+                  @if (c.city) { <span class="dropdown-city">{{ c.city }}</span> }
+                </li>
+              }
+            </ul>
+          }
+
+          @if (showDropdown() && filteredContacts().length === 0) {
+            <div class="dropdown-empty">Kein Kontakt gefunden</div>
+          }
+        </div>
+      </div>
+
+      <!-- Datum & Uhrzeit -->
+      <div class="form-row">
+        <label>Datum &amp; Uhrzeit *</label>
+        <input
+          type="datetime-local"
+          [value]="newDueDate()"
+          (input)="newDueDate.set($any($event.target).value)"
+          required
+        />
+      </div>
+
+      <!-- Notiz -->
+      <div class="form-row">
+        <label>Notiz (optional)</label>
+        <textarea
+          [value]="newNote()"
+          (input)="newNote.set($any($event.target).value)"
+          rows="2"
+          placeholder="Was ist zu tun?"
+        ></textarea>
+      </div>
+
+      <button
+        type="submit"
+        class="btn btn--primary"
+        [disabled]="!selectedContact() || !newDueDate()"
+      >
+        Erinnerung speichern
+      </button>
+    </form>
+  }
+
+  <!-- Erinnerungen-Liste -->
+  <div class="reminders-list">
+    @for (r of reminders(); track r.id) {
+      <div class="reminder-item"
+           [class.reminder-item--done]="r.is_done"
+           [class.reminder-item--overdue]="isOverdue(r)">
+
+        <button
+          class="done-btn"
+          (click)="toggleDone(r)"
+          [title]="r.is_done ? 'Als offen markieren' : 'Als erledigt markieren'"
+        >
+          @if (r.is_done) { <span class="done-check">✓</span> }
+          @else { <span class="done-circle">○</span> }
+        </button>
+
+        <div class="reminder-body">
+          <a class="reminder-contact" [routerLink]="['/contacts', r.contact_id]">
+            {{ contactName(r.contact_id) }}
+          </a>
+          <div class="reminder-due" [class.reminder-due--overdue]="isOverdue(r)">
+            <span class="due-icon">🕐</span>
+            {{ formatDate(r.due_date) }}
+            @if (isOverdue(r)) {
+              <span class="overdue-badge">Überfällig</span>
+            }
+          </div>
+          @if (r.note) {
+            <p class="reminder-note">{{ r.note }}</p>
+          }
+        </div>
+
+        <button class="delete-btn" (click)="deleteReminder(r.id)" title="Löschen">✕</button>
+      </div>
+    }
+
+    @if (reminders().length === 0) {
+      <div class="empty-state">
+        <span class="empty-icon">🔔</span>
+        <p>Keine Erinnerungen vorhanden.</p>
+        <button class="btn btn--ghost" (click)="showForm.set(true)">Erste Erinnerung anlegen</button>
+      </div>
+    }
+  </div>
+</div>

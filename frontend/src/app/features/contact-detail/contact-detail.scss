@@ -1,0 +1,365 @@
+@use 'styles/variables' as *;
+@use 'styles/mixins' as *;
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.detail-page {
+  padding: 0 0.875rem 3rem;
+
+  @include responsive(sm) {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 1rem 3rem;
+  }
+}
+
+.detail-loading {
+  @include flex-center;
+  height: 60vh;
+
+  .loading-spinner {
+    width: 2rem;
+    height: 2rem;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top-color: $primary;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+}
+
+// ── Header ────────────────────────────────────────────────────────────────
+
+.detail-header {
+  @include flex-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 1rem 0 0.75rem;
+  position: sticky;
+  top: 0;
+  background: $bg-app;
+  z-index: 10;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  color: $text-secondary;
+  font-weight: 500;
+  font-size: 0.875rem;
+  text-decoration: none;
+  padding: 0.35rem 0.75rem;
+  border-radius: $border-radius;
+  border: 1px solid $glass-border;
+  @include transition-quick;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: $text-primary;
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .back-icon { font-size: 1rem; }
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 1rem;
+  border-radius: $border-radius;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  @include transition-quick;
+  white-space: nowrap;
+  font-family: inherit;
+
+  &:active { transform: scale(0.97); }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  &--secondary {
+    background: $primary;
+    color: $text-on-primary;
+    font-weight: 700;
+    &:hover:not(:disabled) { background: $primary-light; }
+  }
+
+  &--danger {
+    background: rgba($error, 0.12);
+    color: $error;
+    border: 1px solid rgba($error, 0.25);
+    &:hover:not(:disabled) { background: rgba($error, 0.2); }
+  }
+
+  &--ghost {
+    background: transparent;
+    color: $text-secondary;
+    border: 1px solid $glass-border;
+    &:hover:not(:disabled) { background: rgba(255,255,255,0.06); color: $text-primary; border-color: rgba(255,255,255,0.15); }
+  }
+
+  &--delete {
+    background: transparent;
+    color: $text-muted;
+    border: 1px solid $glass-border;
+    padding: 0.45rem 0.625rem;
+    font-size: 1rem;
+    &:hover { color: $error; border-color: rgba($error, 0.35); background: rgba($error, 0.08); }
+  }
+}
+
+.delete-confirm-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: $error;
+  white-space: nowrap;
+}
+
+// ── 3D Viewer ─────────────────────────────────────────────────────────────
+
+.viewer-section {
+  margin: 0.5rem -0.875rem 1.25rem;
+
+  // Mobile: Viewer füllt den sichtbaren Bereich bis zur Bottom-Nav aus.
+  // 5rem = padding-bottom von shell__main (= Höhe der schwebenden Bottom-Nav).
+  // So endet der Viewer exakt über der Nav und die Scroll-Zone bleibt sichtbar.
+  @media (max-width: 479px) {
+    height: calc(100vh - 5rem);        // Fallback für ältere Browser
+    height: calc(100svh - 5rem);       // Stable viewport height
+    margin-top: 0;
+    margin-bottom: 1.25rem;
+  }
+
+  @include responsive(sm) { margin: 0.75rem 0 1.25rem; }
+}
+
+// ── Info-Karten ───────────────────────────────────────────────────────────
+
+.info-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.info-card {
+  background: $bg-surface-1;
+  border: 1px solid $glass-border;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-card;
+  padding: 1rem 1.125rem 1.25rem;
+
+  @include responsive(sm) { padding: 1.25rem 1.25rem 1.5rem; }
+
+  &__header {
+    @include flex-between;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  &__title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: $text-primary;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  &__section-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: $text-muted;
+    margin: 1.25rem 0 0.875rem;
+
+    &:first-child { margin-top: 0; }
+  }
+}
+
+.category-badge {
+  background: rgba(255, 255, 255, 0.08);
+  color: $text-secondary;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.2rem 0.625rem;
+  border-radius: $border-radius-pill;
+  border: 1px solid $glass-border;
+  white-space: nowrap;
+}
+
+// ── Info-Grid ─────────────────────────────────────────────────────────────
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+
+  @include responsive(sm) {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.875rem 1rem;
+  }
+}
+
+.info-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  &--full { grid-column: 1 / -1; }
+}
+
+.info-label {
+  font-size: 0.8125rem;  // 13px — minimum for legibility
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: $text-muted;
+}
+
+.info-value {
+  font-size: 0.9375rem;
+  color: $text-primary;
+  line-height: 1.4;
+
+  &--link {
+    color: $primary;
+    text-decoration: none;
+    &:hover { text-decoration: underline; }
+  }
+
+  &--text {
+    margin: 0;
+    color: $text-secondary;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+}
+
+.value--yes { color: $primary; font-weight: 600; }
+.value--no  { color: $text-muted; }
+
+// ── Tags ──────────────────────────────────────────────────────────────────
+
+.tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-top: 0.125rem;
+}
+
+.tag {
+  background: rgba(255, 255, 255, 0.07);
+  color: $text-secondary;
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 0.2rem 0.625rem;
+  border-radius: $border-radius-pill;
+  border: 1px solid $glass-border;
+}
+
+// ── Priorität Badge ───────────────────────────────────────────────────────
+
+.priority-badge {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+
+  &--high   { background: rgba($error, 0.12);   color: $error;   border: 1px solid rgba($error, 0.2); }
+  &--medium { background: rgba($warning, 0.12); color: $warning; border: 1px solid rgba($warning, 0.2); }
+  &--low    { background: rgba(255,255,255,0.06); color: $text-secondary; border: 1px solid $glass-border; }
+}
+
+// ── Notizen ───────────────────────────────────────────────────────────────
+
+.notes-text {
+  margin: 0;
+  color: $text-secondary;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+// ── Anhänge ───────────────────────────────────────────────────────────────
+
+.attachments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.attachment-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid $glass-border;
+  border-radius: $border-radius;
+  text-decoration: none;
+  color: $text-secondary;
+  font-size: 0.875rem;
+  @include transition-quick;
+
+  &:hover { background: rgba(255, 255, 255, 0.08); color: $text-primary; }
+
+  .attachment-icon { font-size: 1rem; }
+}
+
+// ── Meta Footer ───────────────────────────────────────────────────────────
+
+.detail-meta {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  font-size: 0.75rem;
+  color: $text-muted;
+}
+
+// ── Action Panel ──────────────────────────────────────────────────────────
+
+.action-panel {
+  background: $bg-surface-1;
+  border: 1px solid $glass-border;
+  border-radius: $border-radius-lg;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+// ── Print ─────────────────────────────────────────────────────────────────
+
+@media print {
+  .detail-header .header-actions,
+  .viewer-section,
+  .action-panel {
+    display: none !important;
+  }
+
+  .detail-page {
+    padding: 0;
+    max-width: 100%;
+  }
+
+  .info-card {
+    break-inside: avoid;
+    background: white;
+    color: black;
+    border: 1px solid #ccc;
+    box-shadow: none;
+  }
+
+  .info-label { color: #555; }
+  .info-value { color: #000; }
+}

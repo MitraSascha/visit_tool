@@ -1,0 +1,149 @@
+<div class="dashboard-page">
+
+  <header class="dashboard-header">
+    <div>
+      <h1>Dashboard</h1>
+      <p class="subtitle">Ihr Überblick auf einen Blick</p>
+    </div>
+    <a routerLink="/contacts" class="btn btn--ghost btn--sm">Alle Kontakte →</a>
+  </header>
+
+  @if (stats$ | async; as stats) {
+
+    <!-- ── KPI-Karten ──────────────────────────────────────────────────── -->
+    <div class="kpi-grid">
+
+      <a routerLink="/contacts" class="kpi-card kpi-card--link">
+        <div class="kpi-icon">🏢</div>
+        <div class="kpi-body">
+          <span class="kpi-value">{{ stats.total_contacts }}</span>
+          <span class="kpi-label">Kontakte gesamt</span>
+        </div>
+      </a>
+
+      <a routerLink="/contacts" class="kpi-card kpi-card--link kpi-card--accent">
+        <div class="kpi-icon">🆕</div>
+        <div class="kpi-body">
+          <span class="kpi-value">{{ stats.recently_added }}</span>
+          <span class="kpi-label">Neue (30 Tage)</span>
+        </div>
+      </a>
+
+      <a routerLink="/reminders"
+         class="kpi-card kpi-card--link"
+         [class.kpi-card--alert]="stats.overdue_reminders_count > 0">
+        <div class="kpi-icon">{{ stats.overdue_reminders_count > 0 ? '⚠️' : '🔔' }}</div>
+        <div class="kpi-body">
+          <span class="kpi-value">{{ stats.overdue_reminders_count }}</span>
+          <span class="kpi-label">Überfällige Erinnerungen</span>
+        </div>
+        @if (stats.overdue_reminders_count > 0) {
+          <span class="kpi-action">Jetzt prüfen →</span>
+        }
+      </a>
+
+      <div class="kpi-card" [class.kpi-card--warn]="stats.contacts_without_rating > 0">
+        <div class="kpi-icon">⭐</div>
+        <div class="kpi-body">
+          <span class="kpi-value">{{ stats.avg_rating ? (stats.avg_rating | number:'1.1-1') : '–' }}</span>
+          <span class="kpi-label">Ø Bewertung</span>
+        </div>
+        @if (stats.contacts_without_rating > 0) {
+          <span class="kpi-subinfo">{{ stats.contacts_without_rating }} ohne Bewertung</span>
+        }
+      </div>
+
+    </div>
+
+    <!-- ── Charts ─────────────────────────────────────────────────────── -->
+    <div class="charts-grid">
+
+      <div class="chart-card">
+        <div class="chart-card__header">
+          <h2 class="chart-title">Nach Kategorie</h2>
+          <span class="chart-total">{{ stats.contacts_by_category.length }} Kategorien</span>
+        </div>
+        <div class="bar-list">
+          @for (item of stats.contacts_by_category; track item.name) {
+            <div class="bar-row">
+              <span class="bar-label" [title]="item.name">{{ item.name }}</span>
+              <div class="bar-track">
+                <div class="bar-fill"
+                     [style.width.%]="barPercent(item.count, stats.contacts_by_category)">
+                </div>
+              </div>
+              <span class="bar-count">{{ item.count }}</span>
+            </div>
+          }
+          @if (stats.contacts_by_category.length === 0) {
+            <p class="chart-empty">Noch keine Kategorien vergeben</p>
+          }
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-card__header">
+          <h2 class="chart-title">Nach Priorität</h2>
+          <span class="chart-total">{{ stats.total_contacts }} gesamt</span>
+        </div>
+        <div class="bar-list">
+          @for (item of stats.contacts_by_priority; track item.name) {
+            <div class="bar-row">
+              <span class="bar-label priority-label priority-label--{{ item.name }}">
+                {{ priorityLabel(item.name) }}
+              </span>
+              <div class="bar-track">
+                <div class="bar-fill bar-fill--{{ item.name }}"
+                     [style.width.%]="barPercent(item.count, stats.contacts_by_priority)">
+                </div>
+              </div>
+              <span class="bar-count">{{ item.count }}</span>
+            </div>
+          }
+          @if (stats.contacts_by_priority.length === 0) {
+            <p class="chart-empty">Noch keine Prioritäten vergeben</p>
+          }
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Schnellzugriff ──────────────────────────────────────────────── -->
+    <div class="quick-actions">
+      <h3 class="quick-title">Schnellzugriff</h3>
+      <div class="quick-grid">
+        <a routerLink="/capture" class="quick-btn">
+          <span class="quick-icon">📸</span>
+          <span>Visitenkarte scannen</span>
+        </a>
+        <a routerLink="/new" class="quick-btn">
+          <span class="quick-icon">➕</span>
+          <span>Kontakt anlegen</span>
+        </a>
+        <a routerLink="/map" class="quick-btn">
+          <span class="quick-icon">🗺</span>
+          <span>Karte öffnen</span>
+        </a>
+        <a routerLink="/reminders" class="quick-btn">
+          <span class="quick-icon">🔔</span>
+          <span>Erinnerungen</span>
+        </a>
+        <a routerLink="/projects" class="quick-btn">
+          <span class="quick-icon">🏗</span>
+          <span>Projekte</span>
+        </a>
+        <a routerLink="/groups" class="quick-btn">
+          <span class="quick-icon">👥</span>
+          <span>Gruppen</span>
+        </a>
+      </div>
+    </div>
+
+  } @else {
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <span>Daten werden geladen…</span>
+    </div>
+  }
+
+</div>

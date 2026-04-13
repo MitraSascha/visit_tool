@@ -1,0 +1,153 @@
+<div class="edit-page">
+  <header class="edit-header">
+    <button type="button" class="back-btn" (click)="cancel()">← Abbrechen</button>
+    <h1 class="edit-title">{{ isNew() ? 'Neuer Kontakt' : 'Kontakt bearbeiten' }}</h1>
+  </header>
+
+  @if (loading()) {
+    <div class="edit-loading"><div class="spinner"></div></div>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="save()" class="edit-form">
+
+      <section class="form-card">
+        <h3 class="form-card__title">Stammdaten</h3>
+        <div class="form-grid">
+          <div class="field field--full">
+            <label class="field__label">Firma *</label>
+            <input class="field__input" formControlName="company_name"
+                   [class.field__input--error]="form.controls.company_name.invalid && form.controls.company_name.touched" />
+          </div>
+          <div class="field">
+            <label class="field__label">Ansprechpartner</label>
+            <input class="field__input" formControlName="contact_name" />
+          </div>
+          <div class="field">
+            <label class="field__label">Position</label>
+            <input class="field__input" formControlName="job_title" />
+          </div>
+          <div class="field">
+            <label class="field__label">Telefon</label>
+            <input class="field__input" type="tel" formControlName="phone" />
+          </div>
+          <div class="field">
+            <label class="field__label">Mobil</label>
+            <input class="field__input" type="tel" formControlName="mobile" />
+          </div>
+          <div class="field field--full">
+            <label class="field__label">E-Mail</label>
+            <input class="field__input" type="email" formControlName="email" />
+          </div>
+          <div class="field field--full">
+            <label class="field__label">Website</label>
+            <input class="field__input" formControlName="website" />
+          </div>
+          <div class="field field--full">
+            <label class="field__label">Straße</label>
+            <input class="field__input" formControlName="street" />
+          </div>
+          <div class="field">
+            <label class="field__label">PLZ</label>
+            <input class="field__input" formControlName="zip_code" />
+          </div>
+          <div class="field">
+            <label class="field__label">Stadt</label>
+            <input class="field__input" formControlName="city" />
+          </div>
+        </div>
+      </section>
+
+      <section class="form-card">
+        <h3 class="form-card__title">Einordnung</h3>
+        <div class="form-grid">
+          <div class="field">
+            <label class="field__label">Kategorie</label>
+            <select class="field__input" formControlName="category">
+              <option value="">— wählen —</option>
+              @for (cat of categories; track cat) {
+                <option [value]="cat">{{ cat }}</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <label class="field__label">Gewerk</label>
+            <input class="field__input" formControlName="trade" />
+          </div>
+          <div class="field field--full">
+            <label class="field__label">Einsatzgebiet</label>
+            <input class="field__input" formControlName="service_area" />
+          </div>
+          <div class="field field--full">
+            <label class="field__label">Tags <small>(kommagetrennt)</small></label>
+            <input class="field__input" formControlName="tags" placeholder="zuverlässig, Wasserschäden" />
+          </div>
+          <div class="field field--full">
+            <label class="field__label">Beschreibung</label>
+            <textarea class="field__input field__textarea" formControlName="service_description" rows="3"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <section class="form-card">
+        <h3 class="form-card__title">Praxisnutzen</h3>
+        <div class="form-grid">
+          <div class="field">
+            <label class="field__label">Zusammenarbeit</label>
+            <select class="field__input" formControlName="has_worked_with_us">
+              @for (opt of workedOptions; track opt.value) {
+                <option [value]="opt.value">{{ opt.label }}</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <label class="field__label">Priorität</label>
+            <select class="field__input" formControlName="priority">
+              @for (p of priorities; track p.value) {
+                <option [value]="p.value">{{ p.label }}</option>
+              }
+            </select>
+          </div>
+          <div class="field field--full">
+            <label class="field__label">Bewertung</label>
+            <app-star-rating [rating]="form.controls.internal_rating.value" (ratingChange)="setRating($event)" />
+          </div>
+          <div class="field">
+            <label class="field__label">Reaktionszeit</label>
+            <select class="field__input" formControlName="response_speed">
+              <option value="">—</option>
+              @for (r of responseSpeeds; track r.value) {
+                <option [value]="r.value">{{ r.label }}</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <label class="field__label">Letztes Projekt</label>
+            <input class="field__input" formControlName="last_project" />
+          </div>
+          <div class="field">
+            <label class="field__label">Empfohlen von</label>
+            <input class="field__input" formControlName="recommended_by" />
+          </div>
+          <div class="field">
+            <label class="field__label">Bekannt bei</label>
+            <input class="field__input" formControlName="known_by" />
+          </div>
+        </div>
+      </section>
+
+      <section class="form-card">
+        <h3 class="form-card__title">Notizen</h3>
+        <textarea class="field__input field__textarea" formControlName="note" rows="4"
+                  placeholder="Interne Notizen, Besonderheiten, Konditionen…"></textarea>
+      </section>
+
+      <div class="edit-actions">
+        <button type="button" class="btn btn--ghost" (click)="cancel()">Abbrechen</button>
+        <button type="submit" class="btn btn--primary" [disabled]="form.invalid || saving()">
+          @if (saving()) { <span class="spinner-sm"></span> } @else { ✓ }
+          Speichern
+        </button>
+      </div>
+
+    </form>
+  }
+</div>

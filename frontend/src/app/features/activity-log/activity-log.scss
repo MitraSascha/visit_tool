@@ -1,0 +1,12 @@
+@use 'styles/variables' as *;
+@use 'styles/mixins' as *;
+
+.actlog-page { padding: 0 0.875rem 3rem; max-width: 1000px; margin: 0 auto; @include responsive(sm) { padding: 0 1.5rem 3rem; } }
+.page-header { padding: 1.5rem 0 1rem; h1 { font-size: 1.5rem; font-weight: 700; color: $text-primary; margin: 0; } .subtitle { font-size: 0.875rem; color: $text-muted; margin: 0.25rem 0 0; } }
+.log-table-wrapper { overflow-x: auto; background: $bg-surface-1; border: 1px solid $glass-border; border-radius: $border-radius-lg; }
+.log-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; thead { tr { border-bottom: 1px solid $glass-border; } th { padding: 0.875rem 1rem; text-align: left; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: $text-muted; white-space: nowrap; } } tbody { tr { border-bottom: 1px solid $glass-border; transition: background 0.1s; &:last-child { border-bottom: none; } &:hover { background: rgba(255,255,255,0.02); } } td { padding: 0.75rem 1rem; color: $text-secondary; } } }
+.log-time { white-space: nowrap; color: $text-muted; font-size: 0.8125rem; }
+.action-badge { background: rgba(255,255,255,0.06); border: 1px solid $glass-border; border-radius: 4px; padding: 0.15rem 0.5rem; font-size: 0.78rem; font-weight: 500; color: $text-secondary; white-space: nowrap; }
+.log-entity { color: $primary; font-weight: 500; }
+.log-detail { max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.empty-cell { text-align: center; color: $text-muted; padding: 3rem; }

@@ -1,0 +1,42 @@
+<div class="groups-page">
+  <header class="page-header">
+    <h1>Kontaktgruppen</h1>
+    <button class="btn btn--primary" (click)="showForm.set(!showForm())">
+      {{ showForm() ? 'Abbrechen' : '+ Neue Gruppe' }}
+    </button>
+  </header>
+
+  @if (showForm()) {
+    <form class="add-form" (ngSubmit)="submitForm()">
+      <div class="form-row">
+        <label>Name *</label>
+        <input type="text" [value]="newName()" (input)="newName.set($any($event.target).value)" required />
+      </div>
+      <div class="form-row">
+        <label>Beschreibung</label>
+        <textarea [value]="newDescription()" (input)="newDescription.set($any($event.target).value)" rows="2"></textarea>
+      </div>
+      <div class="form-row form-row--inline">
+        <label>Farbe</label>
+        <input type="color" [value]="newColor()" (input)="newColor.set($any($event.target).value)" />
+      </div>
+      <button type="submit" class="btn btn--primary">Speichern</button>
+    </form>
+  }
+
+  <div class="groups-list">
+    @for (g of groups(); track g.id) {
+      <div class="group-card">
+        <div class="group-color-dot" [style]="groupStyle(g.color)"></div>
+        <div class="group-info">
+          <span class="group-name">{{ g.name }}</span>
+          @if (g.description) { <span class="group-desc">{{ g.description }}</span> }
+        </div>
+        <button class="delete-btn" (click)="deleteGroup(g.id)">✕</button>
+      </div>
+    }
+    @if (groups().length === 0) {
+      <p class="empty-state">Noch keine Gruppen erstellt.</p>
+    }
+  </div>
+</div>

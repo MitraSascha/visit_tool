@@ -1,0 +1,55 @@
+<div class="projects-page">
+  <header class="page-header">
+    <h1>Projekte</h1>
+    <button class="btn btn--primary" (click)="showForm.set(!showForm())">
+      {{ showForm() ? 'Abbrechen' : '+ Neues Projekt' }}
+    </button>
+  </header>
+
+  @if (showForm()) {
+    <form class="add-form" (ngSubmit)="submitForm()">
+      <div class="form-row">
+        <label>Name *</label>
+        <input type="text" [value]="newName()" (input)="newName.set($any($event.target).value)" required />
+      </div>
+      <div class="form-row">
+        <label>Adresse</label>
+        <input type="text" [value]="newAddress()" (input)="newAddress.set($any($event.target).value)" />
+      </div>
+      <div class="form-row">
+        <label>Beschreibung</label>
+        <textarea [value]="newDescription()" (input)="newDescription.set($any($event.target).value)" rows="2"></textarea>
+      </div>
+      <div class="form-row">
+        <label>Status</label>
+        <select [value]="newStatus()" (change)="newStatus.set($any($event.target).value)">
+          <option value="planned">Geplant</option>
+          <option value="active">Aktiv</option>
+          <option value="completed">Abgeschlossen</option>
+          <option value="cancelled">Abgebrochen</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn--primary">Speichern</button>
+    </form>
+  }
+
+  <div class="projects-list">
+    @for (p of projects(); track p.id) {
+      <div class="project-card">
+        <div class="project-card__header">
+          <span class="project-name">{{ p.name }}</span>
+          <span class="status-badge status-badge--{{ statusClass(p.status) }}">{{ statusLabel(p.status) }}</span>
+        </div>
+        @if (p.description) { <p class="project-desc">{{ p.description }}</p> }
+        @if (p.address) { <p class="project-address">📍 {{ p.address }}</p> }
+        <div class="project-card__footer">
+          <span class="project-date">{{ p.created_at | date:'dd.MM.yyyy' }}</span>
+          <button class="delete-btn" (click)="deleteProject(p.id)">Löschen</button>
+        </div>
+      </div>
+    }
+    @if (projects().length === 0) {
+      <p class="empty-state">Noch keine Projekte angelegt.</p>
+    }
+  </div>
+</div>
